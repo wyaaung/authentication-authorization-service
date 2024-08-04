@@ -38,13 +38,13 @@ public class PermissionController {
 
   @GetMapping("/{permissionName}")
   @ResponseStatus(OK)
-  public PermissionDetailsDto getPermission(@PathVariable("permissionName") String permissionName) {
+  public PermissionDetailsDto getPermission(@PathVariable("permissionName") final String permissionName) {
     return PermissionDetailsTransformer.toDto(permissionService.getRolesAndUsersWithPermission(permissionName));
   }
 
   @PostMapping("/{permissionName}")
   @ResponseStatus(CREATED)
-  public void createPermission(@PathVariable final String permissionName,
+  public void createPermission(@PathVariable("permissionName") final String permissionName,
                                @RequestBody final PermissionDto permissionDto) {
     permissionValidator.validateCreatePermission(permissionName, permissionDto);
     permissionService.createPermission(PermissionTransformer.toDomain(permissionDto));
@@ -52,7 +52,7 @@ public class PermissionController {
 
   @DeleteMapping("/{permissionName}")
   @ResponseStatus(OK)
-  public void deletePermission(@PathVariable final String permissionName) {
+  public void deletePermission(@PathVariable("permissionName") final String permissionName) {
     permissionService.deletePermission(permissionName);
   }
 }

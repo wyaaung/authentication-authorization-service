@@ -1,8 +1,10 @@
 package com.wyaaung.rbac.controller;
 
 import com.wyaaung.rbac.dto.RoleDto;
+import com.wyaaung.rbac.dto.RoleUsersDto;
 import com.wyaaung.rbac.service.RoleService;
 import com.wyaaung.rbac.transformer.RoleTransformer;
+import com.wyaaung.rbac.transformer.RoleUsersTransformer;
 import com.wyaaung.rbac.validator.RoleValidator;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +35,16 @@ public class RoleController {
     return roleService.getRoles().stream().map(RoleTransformer::toDto).toList();
   }
 
+  @GetMapping("/{roleName}")
+  @ResponseStatus(OK)
+  public RoleUsersDto getPermission(@PathVariable("roleName") final String roleName) {
+    return RoleUsersTransformer.toDto(roleService.getUsersWithRole(roleName));
+  }
+
+
   @PostMapping("/{roleName}")
   @ResponseStatus(CREATED)
-  public void createRole(@PathVariable final String roleName,
+  public void createRole(@PathVariable("roleName") final String roleName,
                          @RequestBody final RoleDto roleDto) {
     roleValidator.validateCreateRole(roleName, roleDto);
     roleService.createRole(RoleTransformer.toDomain(roleDto));

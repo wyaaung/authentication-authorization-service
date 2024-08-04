@@ -1,7 +1,7 @@
 package com.wyaaung.rbac.service;
 
 import com.wyaaung.rbac.domain.Role;
-import com.wyaaung.rbac.domain.RoleDetails;
+import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
 import com.wyaaung.rbac.repository.RoleRepository;
@@ -25,9 +25,9 @@ public class RoleService {
     return roleRepository.getRoles();
   }
 
-  public RoleDetails getPermissionsAndUsersWithRole(final String roleName) {
+  public RoleUsers getUsersWithRole(final String roleName) {
     Role role = getRole(roleName);
-    return userRolePermissionRepository.getPermissionsAndUsersWithRole(role);
+    return userRolePermissionRepository.getUsersWithRole(role);
   }
 
   public void createRole(final Role role) {
