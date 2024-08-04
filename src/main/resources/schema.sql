@@ -1,3 +1,9 @@
+drop table if exists role_permission cascade;
+drop table if exists permission cascade;
+drop table if exists user_role cascade;
+drop table if exists role cascade;
+drop table if exists user_account cascade;
+
 -- Table to store roles with composite primary key
 CREATE TABLE role
 (
@@ -43,3 +49,38 @@ CREATE TABLE user_role
     FOREIGN KEY (username) REFERENCES user_account (username) ON DELETE CASCADE,
     FOREIGN KEY (role_name) REFERENCES role (name) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_permission_name ON permission(name);
+CREATE INDEX idx_role_permission_role_name ON role_permission(role_name);
+CREATE INDEX idx_role_permission_permission_name ON role_permission(permission_name);
+CREATE INDEX idx_user_role_role_name ON user_role(role_name);
+CREATE INDEX idx_user_role_username ON user_role(username);
+CREATE INDEX idx_user_account_username ON user_account(username);
+
+-- Populate permissions
+INSERT INTO permission (name, description, display_name)
+VALUES ('read', 'Permission to read', 'Read'),
+       ('write', 'Permission to write', 'Write'),
+       ('delete', 'Permission to delete', 'Delete');
+
+-- Populate roles
+INSERT INTO role (name, description, display_name)
+VALUES ('administrator', 'Administrator Role', 'Administrator'),
+       ('manager', 'Manager Role', 'Manager'),
+       ('user', 'User Role', 'User');
+
+INSERT INTO role_permission (role_name, permission_name)
+VALUES ('manager', 'read'),
+       ('manager', 'write'),
+       ('user', 'read'),
+       ('administrator', 'read'),
+       ('administrator', 'write'),
+       ('administrator', 'delete');
+
+INSERT INTO user_account (username, full_name, password, email_address)
+VALUES ('userone', 'User One', 'password1', 'userone@example.com'),
+       ('usertwo', 'User Two', 'password2', 'usertwo@example.com');
+
+INSERT INTO user_role (username, role_name)
+VALUES ('userone', 'administrator'),
+       ('usertwo', 'user');

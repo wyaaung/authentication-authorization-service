@@ -49,7 +49,7 @@ public class PermissionController {
   @PostMapping("/{permissionName}")
   @ResponseStatus(CREATED)
   public void createPermission(@PathVariable final String permissionName,
-                                        @RequestBody final PermissionDto permissionDto) {
+                               @RequestBody final PermissionDto permissionDto) {
     permissionValidator.validateCreatePermission(permissionName, permissionDto);
     permissionService.createPermission(PermissionTransformer.toDomain(permissionDto));
   }
