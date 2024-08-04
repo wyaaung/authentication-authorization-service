@@ -39,33 +39,11 @@ public class PermissionRepository {
     return !namedParameterJdbcTemplate.queryForList(sql, paramSource, Integer.class).isEmpty();
   }
 
-  public Set<String> permissionAssigneRoles(final String permissionName) {
-    final String sql = """
-        SELECT role_name, permission_name
-        FROM role_permission
-        WHERE permission_name = :permission_name
-      """;
-
-    final SqlParameterSource paramSource = new MapSqlParameterSource()
-      .addValue("permission_name", permissionName);
-
-    return namedParameterJdbcTemplate.query(sql, paramSource, (resultSet) -> {
-      Set<String> roles = new HashSet<>();
-
-      while (resultSet.next()) {
-        roles.add(resultSet.getString("role_name"));
-      }
-
-      return roles;
-    });
-  }
-
   public List<Permission> getPermissions() {
     final String sql = """
       SELECT name, description, display_name
       FROM permission
       """;
-
 
     return namedParameterJdbcTemplate.query(sql, resultSet -> {
       final List<Permission> result = new ArrayList<>();
@@ -123,5 +101,26 @@ public class PermissionRepository {
       .addValue("permission_name", permissionName);
 
     namedParameterJdbcTemplate.update(sql, paramSource);
+  }
+
+  public Set<String> permissionAssigneRoles(final String permissionName) {
+    final String sql = """
+        SELECT role_name, permission_name
+        FROM role_permission
+        WHERE permission_name = :permission_name
+      """;
+
+    final SqlParameterSource paramSource = new MapSqlParameterSource()
+      .addValue("permission_name", permissionName);
+
+    return namedParameterJdbcTemplate.query(sql, paramSource, (resultSet) -> {
+      Set<String> roles = new HashSet<>();
+
+      while (resultSet.next()) {
+        roles.add(resultSet.getString("role_name"));
+      }
+
+      return roles;
+    });
   }
 }

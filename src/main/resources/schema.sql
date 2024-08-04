@@ -79,8 +79,10 @@ VALUES ('manager', 'read'),
 
 INSERT INTO user_account (username, full_name, password, email_address)
 VALUES ('userone', 'User One', 'password1', 'userone@example.com'),
-       ('usertwo', 'User Two', 'password2', 'usertwo@example.com');
+       ('usertwo', 'User Two', 'password2', 'usertwo@example.com'),
+       ('userthree', 'User Three', 'password3', 'userthree@example.com');
 
 INSERT INTO user_role (username, role_name)
 VALUES ('userone', 'administrator'),
-       ('usertwo', 'user');
+       ('usertwo', 'manager'),
+       ('userthree', 'manager');

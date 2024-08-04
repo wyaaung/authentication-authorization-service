@@ -1,7 +1,5 @@
 package com.wyaaung.rbac.controller;
 
-import com.wyaaung.rbac.domain.Permission;
-import com.wyaaung.rbac.domain.PermissionDetails;
 import com.wyaaung.rbac.dto.PermissionDetailsDto;
 import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.service.PermissionService;
@@ -41,9 +39,7 @@ public class PermissionController {
   @GetMapping("/{permissionName}")
   @ResponseStatus(OK)
   public PermissionDetailsDto getPermission(@PathVariable("permissionName") String permissionName) {
-    final Permission permission = permissionService.getPermission(permissionName);
-    final PermissionDetails permissionDetails = permissionService.getRolesAndUsersWithPermission(permission);
-    return PermissionDetailsTransformer.toDto(permissionDetails);
+    return PermissionDetailsTransformer.toDto(permissionService.getRolesAndUsersWithPermission(permissionName));
   }
 
   @PostMapping("/{permissionName}")

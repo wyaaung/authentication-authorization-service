@@ -26,17 +26,8 @@ public class PermissionService {
     return permissionRepository.getPermissions();
   }
 
-  public Permission getPermission(final String permissionName) {
-    final Optional<Permission> optionalPermission = permissionRepository.getPermission(permissionName);
-
-    if (!optionalPermission.isPresent()) {
-      throw new PermissionNotFoundException(String.format("Permission %s does not exist", permissionName));
-    }
-
-    return optionalPermission.get();
-  }
-
-  public PermissionDetails getRolesAndUsersWithPermission(final Permission permission) {
+  public PermissionDetails getRolesAndUsersWithPermission(final String permissionName) {
+    Permission permission = getPermission(permissionName);
     return userRolePermissionRepository.getRolesAndUsersWithPermission(permission);
   }
 
@@ -60,6 +51,16 @@ public class PermissionService {
     }
 
     permissionRepository.deletePermission(permissionName);
+  }
+
+  private Permission getPermission(final String permissionName) {
+    final Optional<Permission> optionalPermission = permissionRepository.getPermission(permissionName);
+
+    if (!optionalPermission.isPresent()) {
+      throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
+    }
+
+    return optionalPermission.get();
   }
 
   private boolean permissionExists(final String permissionName) {

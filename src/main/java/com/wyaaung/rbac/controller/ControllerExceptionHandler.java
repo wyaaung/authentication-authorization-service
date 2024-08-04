@@ -2,8 +2,10 @@ package com.wyaaung.rbac.controller;
 
 import com.wyaaung.rbac.dto.ExceptionDto;
 import com.wyaaung.rbac.exception.DuplicatePermissionException;
+import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.PermissionAssignedToRoles;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
+import com.wyaaung.rbac.exception.RoleNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,5 +50,19 @@ public class ControllerExceptionHandler {
   public final ExceptionDto handlePermissionAssignedRolesException(final PermissionAssignedToRoles permissionAssignedToRoles) {
     LOGGER.error(permissionAssignedToRoles.getMessage(), permissionAssignedToRoles);
     return new ExceptionDto(BAD_REQUEST.value(), BAD_REQUEST.name(), permissionAssignedToRoles.getMessage());
+  }
+
+  @ExceptionHandler(RoleNotFoundException.class)
+  @ResponseStatus(NOT_FOUND)
+  public final ExceptionDto handleRuleNotFoundException(final RoleNotFoundException roleNotFoundException) {
+    LOGGER.warn(roleNotFoundException.getMessage(), roleNotFoundException);
+    return new ExceptionDto(NOT_FOUND.value(), NOT_FOUND.name(), roleNotFoundException.getMessage());
+  }
+
+  @ExceptionHandler(DuplicateRoleException.class)
+  @ResponseStatus(CONFLICT)
+  public final ExceptionDto handleDuplicateRoleException(final DuplicateRoleException duplicateRoleException) {
+    LOGGER.error(duplicateRoleException.getMessage(), duplicateRoleException);
+    return new ExceptionDto(CONFLICT.value(), CONFLICT.name(), duplicateRoleException.getMessage());
   }
 }
