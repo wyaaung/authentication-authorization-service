@@ -1,5 +1,6 @@
 package com.wyaaung.rbac.service;
 
+import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.domain.Role;
 import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
@@ -41,6 +42,14 @@ public class RoleService {
   public RoleUsers getUsersWithRole(final String roleName) {
     Role role = getRole(roleName);
     return userRolePermissionRepository.getUsersWithRole(role);
+  }
+
+  public List<Permission> getPermissionsOfRole(final String roleName) {
+    if (!roleExists(roleName)) {
+      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
+    }
+
+    return rolePermissionRepository.getPermissionsOfRole(roleName);
   }
 
   public void createRole(final Role role) {

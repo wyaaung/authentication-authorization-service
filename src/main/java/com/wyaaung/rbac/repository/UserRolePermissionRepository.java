@@ -6,7 +6,6 @@ import com.wyaaung.rbac.domain.Role;
 import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.repository.extractor.PermissionDetailsExtractor;
-import com.wyaaung.rbac.repository.extractor.RoleDetailsExtractor;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,14 +17,11 @@ import org.springframework.stereotype.Repository;
 public class UserRolePermissionRepository {
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
   private final PermissionDetailsExtractor permissionDetailsExtractor;
-  private final RoleDetailsExtractor roleDetailsExtractor;
 
   public UserRolePermissionRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                                      PermissionDetailsExtractor permissionDetailsExtractor,
-                                      RoleDetailsExtractor roleDetailsExtractor) {
+                                      PermissionDetailsExtractor permissionDetailsExtractor) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     this.permissionDetailsExtractor = permissionDetailsExtractor;
-    this.roleDetailsExtractor = roleDetailsExtractor;
   }
 
   public PermissionDetails getRolesAndUsersWithPermission(final Permission permission) {

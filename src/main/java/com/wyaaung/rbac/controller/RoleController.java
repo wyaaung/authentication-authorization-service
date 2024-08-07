@@ -1,8 +1,10 @@
 package com.wyaaung.rbac.controller;
 
+import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.dto.RoleDto;
 import com.wyaaung.rbac.dto.RoleUsersDto;
 import com.wyaaung.rbac.service.RoleService;
+import com.wyaaung.rbac.transformer.PermissionTransformer;
 import com.wyaaung.rbac.transformer.RoleTransformer;
 import com.wyaaung.rbac.transformer.RoleUsersTransformer;
 import com.wyaaung.rbac.validator.RoleValidator;
@@ -42,6 +44,12 @@ public class RoleController {
     return RoleUsersTransformer.toDto(roleService.getUsersWithRole(roleName));
   }
 
+  @GetMapping("/{roleName}/permissions")
+  @ResponseStatus(OK)
+  public List<PermissionDto> getPermissionsOfRole(@PathVariable("roleName") final String roleName) {
+    return roleService.getPermissionsOfRole(roleName).stream().map(PermissionTransformer::toDto).toList();
+  }
+
   @PostMapping("/{roleName}")
   @ResponseStatus(CREATED)
   public void createRole(@PathVariable("roleName") final String roleName,
@@ -59,7 +67,7 @@ public class RoleController {
   @PostMapping("/{roleName}/permissions/{permissionName}")
   @ResponseStatus(OK)
   public void addPermissionToRole(@PathVariable("roleName") final String roleName,
-                            @PathVariable("permissionName") final String permissionName) {
+                                  @PathVariable("permissionName") final String permissionName) {
     roleService.addPermissionToRole(roleName, permissionName);
   }
 }
