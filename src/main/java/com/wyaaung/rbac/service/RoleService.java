@@ -3,8 +3,11 @@ package com.wyaaung.rbac.service;
 import com.wyaaung.rbac.domain.Role;
 import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
+import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
+import com.wyaaung.rbac.repository.PermissionRepository;
+import com.wyaaung.rbac.repository.RolePermissionRepository;
 import com.wyaaung.rbac.repository.RoleRepository;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
@@ -18,10 +21,17 @@ public class RoleService {
 
   private final RoleRepository roleRepository;
   private final UserRolePermissionRepository userRolePermissionRepository;
+  private final PermissionRepository permissionRepository;
+  private final RolePermissionRepository rolePermissionRepository;
 
-  public RoleService(RoleRepository roleRepository, UserRolePermissionRepository userRolePermissionRepository) {
+  public RoleService(RoleRepository roleRepository,
+                     UserRolePermissionRepository userRolePermissionRepository,
+                     PermissionRepository permissionRepository,
+                     RolePermissionRepository rolePermissionRepository) {
     this.roleRepository = roleRepository;
     this.userRolePermissionRepository = userRolePermissionRepository;
+    this.permissionRepository = permissionRepository;
+    this.rolePermissionRepository = rolePermissionRepository;
   }
 
   public List<Role> getRoles() {
@@ -54,6 +64,17 @@ public class RoleService {
     roleRepository.deleteRole(roleName);
   }
 
+  public void addPermissionToRole(final String roleName, final String permissionName) {
+    if (!roleExists(roleName)) {
+      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
+    }
+
+    if (!permissionRepository.permissionExists(permissionName)) {
+      throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
+    }
+
+    rolePermissionRepository.addPermissionToRole(roleName, permissionName);
+  }
   private Role getRole(final String roleName) {
     final Optional<Role> optionalRole = roleRepository.getRole(roleName);
 

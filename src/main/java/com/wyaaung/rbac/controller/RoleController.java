@@ -32,16 +32,15 @@ public class RoleController {
 
   @GetMapping
   @ResponseStatus(OK)
-  public List<RoleDto> getAllPermissions() {
+  public List<RoleDto> getAllRoles() {
     return roleService.getRoles().stream().map(RoleTransformer::toDto).toList();
   }
 
   @GetMapping("/{roleName}")
   @ResponseStatus(OK)
-  public RoleUsersDto getPermission(@PathVariable("roleName") final String roleName) {
+  public RoleUsersDto getRoleUsers(@PathVariable("roleName") final String roleName) {
     return RoleUsersTransformer.toDto(roleService.getUsersWithRole(roleName));
   }
-
 
   @PostMapping("/{roleName}")
   @ResponseStatus(CREATED)
@@ -53,7 +52,14 @@ public class RoleController {
 
   @DeleteMapping("/{roleName}")
   @ResponseStatus(OK)
-  public void deletePermission(@PathVariable("roleName") final String roleName) {
+  public void deleteRole(@PathVariable("roleName") final String roleName) {
     roleService.deleteRole(roleName);
+  }
+
+  @PostMapping("/{roleName}/permissions/{permissionName}")
+  @ResponseStatus(OK)
+  public void addPermissionToRole(@PathVariable("roleName") final String roleName,
+                            @PathVariable("permissionName") final String permissionName) {
+    roleService.addPermissionToRole(roleName, permissionName);
   }
 }
