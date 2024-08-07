@@ -4,10 +4,13 @@ import com.wyaaung.rbac.domain.Role;
 import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
+import com.wyaaung.rbac.exception.ValidationException;
 import com.wyaaung.rbac.repository.RoleRepository;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,6 +41,16 @@ public class RoleService {
   }
 
   public void deleteRole(final String roleName) {
+    if (!roleExists(roleName)) {
+      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
+    }
+
+    final Set<String> usersWithRole =
+      getUsersWithRole(roleName).users().stream().map((user) -> user.username()).collect(Collectors.toSet());
+    if (!usersWithRole.isEmpty()) {
+      throw new ValidationException("Role is assigned to users: %s".formatted(String.join(", ", usersWithRole)));
+    }
+
     roleRepository.deleteRole(roleName);
   }
 

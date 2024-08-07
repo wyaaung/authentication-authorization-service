@@ -3,8 +3,8 @@ package com.wyaaung.rbac.service;
 import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.domain.PermissionDetails;
 import com.wyaaung.rbac.exception.DuplicatePermissionException;
-import com.wyaaung.rbac.exception.PermissionAssignedToRoles;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
+import com.wyaaung.rbac.exception.ValidationException;
 import com.wyaaung.rbac.repository.PermissionRepository;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
@@ -46,7 +46,7 @@ public class PermissionService {
 
     Set<String> permissionAssignedRoles = permissionAssigneRoles(permissionName);
     if (!permissionAssignedRoles.isEmpty()) {
-      throw new PermissionAssignedToRoles(String.format("Permission '%s' has been assigned to certain roles: %s", permissionName,
+      throw new ValidationException(String.format("Permission '%s' has been assigned to certain roles: %s", permissionName,
         permissionAssignedRoles));
     }
 

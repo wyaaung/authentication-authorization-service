@@ -7,6 +7,7 @@ import com.wyaaung.rbac.transformer.RoleTransformer;
 import com.wyaaung.rbac.transformer.RoleUsersTransformer;
 import com.wyaaung.rbac.validator.RoleValidator;
 import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,5 +49,11 @@ public class RoleController {
                          @RequestBody final RoleDto roleDto) {
     roleValidator.validateCreateRole(roleName, roleDto);
     roleService.createRole(RoleTransformer.toDomain(roleDto));
+  }
+
+  @DeleteMapping("/{roleName}")
+  @ResponseStatus(OK)
+  public void deletePermission(@PathVariable("roleName") final String roleName) {
+    roleService.deleteRole(roleName);
   }
 }
