@@ -59,4 +59,17 @@ public class RolePermissionRepository {
 
     namedParameterJdbcTemplate.update(sql, paramSource);
   }
+
+  public void deletePermissionToRole(final String roleName, final String permissionName) {
+    final String sql = """
+      DELETE FROM role_permission
+      WHERE role_name = :role_name AND permission_name = :permission_name
+      """;
+
+    final SqlParameterSource paramSource = new MapSqlParameterSource()
+      .addValue("role_name", roleName)
+      .addValue("permission_name", permissionName);
+
+    namedParameterJdbcTemplate.update(sql, paramSource);
+  }
 }

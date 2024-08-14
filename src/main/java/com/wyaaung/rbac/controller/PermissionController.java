@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/v1/permissions")
+@RequestMapping("/api/v1/permission")
 public class PermissionController {
   private final PermissionService permissionService;
   private final PermissionValidator permissionValidator;

@@ -1,5 +1,6 @@
 package com.wyaaung.rbac.controller;
 
+import com.wyaaung.rbac.domain.RoleDetails;
 import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.dto.RoleDto;
 import com.wyaaung.rbac.dto.RoleUsersDto;
@@ -22,7 +23,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/v1/roles")
+@RequestMapping("/api/v1/role")
 public class RoleController {
   private final RoleService roleService;
   private final RoleValidator roleValidator;
@@ -66,8 +67,15 @@ public class RoleController {
 
   @PostMapping("/{roleName}/permissions/{permissionName}")
   @ResponseStatus(OK)
-  public void addPermissionToRole(@PathVariable("roleName") final String roleName,
-                                  @PathVariable("permissionName") final String permissionName) {
-    roleService.addPermissionToRole(roleName, permissionName);
+  public RoleDetails addPermissionToRole(@PathVariable("roleName") final String roleName,
+                                         @PathVariable("permissionName") final String permissionName) {
+    return roleService.addPermissionToRole(roleName, permissionName);
+  }
+
+  @DeleteMapping("/{roleName}/permissions/{permissionName}")
+  @ResponseStatus(OK)
+  public RoleDetails deletePermissionToRole(@PathVariable("roleName") final String roleName,
+                                            @PathVariable("permissionName") final String permissionName) {
+    return roleService.deletePermissionToRole(roleName, permissionName);
   }
 }

@@ -2,6 +2,7 @@ package com.wyaaung.rbac.service;
 
 import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.domain.Role;
+import com.wyaaung.rbac.domain.RoleDetails;
 import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
@@ -41,7 +42,7 @@ public class RoleService {
 
   public RoleUsers getUsersWithRole(final String roleName) {
     Role role = getRole(roleName);
-    return userRolePermissionRepository.getUsersWithRole(role);
+    return roleRepository.getUsersWithRole(role);
   }
 
   public List<Permission> getPermissionsOfRole(final String roleName) {
@@ -73,17 +74,39 @@ public class RoleService {
     roleRepository.deleteRole(roleName);
   }
 
-  public void addPermissionToRole(final String roleName, final String permissionName) {
-    if (!roleExists(roleName)) {
-      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
-    }
+  public RoleDetails addPermissionToRole(final String roleName, final String permissionName) {
+    Role role = getRole(roleName);
 
     if (!permissionRepository.permissionExists(permissionName)) {
       throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
     }
 
     rolePermissionRepository.addPermissionToRole(roleName, permissionName);
+
+    return new RoleDetails(
+      rolePermissionRepository.getPermissionsOfRole(roleName).stream().collect(Collectors.toSet()),
+      roleRepository.getUsersWithRole(role).users()
+    );
   }
+
+  public RoleDetails deletePermissionToRole(final String roleName, final String permissionName) {
+    Role role = getRole(roleName);
+
+    boolean permissionExists =
+      rolePermissionRepository.getPermissionsOfRole(roleName).stream().anyMatch(permission -> permission.name().equals(permissionName));
+
+    if (!permissionExists) {
+      throw new PermissionNotFoundException(String.format("Permission '%s' does not exist in Role %s", permissionName, roleName));
+    }
+
+    rolePermissionRepository.deletePermissionToRole(roleName, permissionName);
+
+    return new RoleDetails(
+      rolePermissionRepository.getPermissionsOfRole(roleName).stream().collect(Collectors.toSet()),
+      roleRepository.getUsersWithRole(role).users()
+    );
+  }
+
   private Role getRole(final String roleName) {
     final Optional<Role> optionalRole = roleRepository.getRole(roleName);
 

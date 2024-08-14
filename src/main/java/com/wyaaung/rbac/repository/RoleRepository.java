@@ -1,10 +1,14 @@
 package com.wyaaung.rbac.repository;
 
 import com.wyaaung.rbac.domain.Role;
+import com.wyaaung.rbac.domain.RoleUsers;
+import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.repository.mapper.RoleRowMapper;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -99,5 +103,41 @@ public class RoleRepository {
       .addValue("role_name", roleName);
 
     namedParameterJdbcTemplate.update(sql, paramSource);
+  }
+
+  public RoleUsers getUsersWithRole(final Role role) {
+    final String sql = """
+      SELECT
+          u.username,
+          u.full_name,
+          u.email_address
+      FROM
+          role r
+              JOIN
+          user_role  ur  ON r.name = ur.role_name
+              JOIN
+          user_account u ON ur.username = u.username
+            
+      WHERE
+          r.name = :role_name
+      """;
+
+    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("role_name", role.name());
+
+    return namedParameterJdbcTemplate.query(sql, parameters, (resultSet) -> {
+      Set<User> users = new HashSet<>();
+
+      while (resultSet.next()) {
+        final String username = resultSet.getString("username");
+        final String fullName = resultSet.getString("full_name");
+        final String emailAddress = resultSet.getString("email_address");
+
+        users.add(new User(
+          username, fullName, null, emailAddress
+        ));
+      }
+
+      return new RoleUsers(role.name(), users);
+    });
   }
 }
