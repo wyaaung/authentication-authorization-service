@@ -28,7 +28,7 @@ public class PermissionService {
 
   public PermissionDetails getRolesAndUsersWithPermission(final String permissionName) {
     Permission permission = getPermission(permissionName);
-    return userRolePermissionRepository.getRolesAndUsersWithPermission(permission);
+    return userRolePermissionRepository.getRolesAndUsersByPermission(permission);
   }
 
   public void createPermission(final Permission permission) {
