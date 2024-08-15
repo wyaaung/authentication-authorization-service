@@ -5,6 +5,7 @@ import com.wyaaung.rbac.exception.DuplicatePermissionException;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
+import com.wyaaung.rbac.exception.UserNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,5 +57,12 @@ public class ControllerExceptionHandler {
   public final MessageDto handleDuplicateRoleException(final DuplicateRoleException duplicateRoleException) {
     LOGGER.error(duplicateRoleException.getMessage(), duplicateRoleException);
     return new MessageDto(duplicateRoleException.getMessage());
+  }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  @ResponseStatus(NOT_FOUND)
+  public final MessageDto handleUserNotFoundException(final UserNotFoundException userNotFoundException) {
+    LOGGER.warn(userNotFoundException.getMessage(), userNotFoundException);
+    return new MessageDto(userNotFoundException.getMessage());
   }
 }
