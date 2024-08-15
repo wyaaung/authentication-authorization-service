@@ -5,7 +5,6 @@ import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.service.PermissionService;
 import com.wyaaung.rbac.transformer.PermissionDetailsTransformer;
 import com.wyaaung.rbac.transformer.PermissionTransformer;
-import com.wyaaung.rbac.validator.PermissionValidator;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +22,9 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/permission")
 public class PermissionController {
   private final PermissionService permissionService;
-  private final PermissionValidator permissionValidator;
 
-  public PermissionController(PermissionService permissionService, PermissionValidator permissionValidator) {
+  public PermissionController(PermissionService permissionService) {
     this.permissionService = permissionService;
-    this.permissionValidator = permissionValidator;
   }
 
   @GetMapping
@@ -42,11 +39,9 @@ public class PermissionController {
     return PermissionDetailsTransformer.toDto(permissionService.getRolesAndUsersWithPermission(permissionName));
   }
 
-  @PostMapping("/{permissionName}")
+  @PostMapping
   @ResponseStatus(CREATED)
-  public void createPermission(@PathVariable("permissionName") final String permissionName,
-                               @RequestBody final PermissionDto permissionDto) {
-    permissionValidator.validateCreatePermission(permissionName, permissionDto);
+  public void createPermission(@RequestBody final PermissionDto permissionDto) {
     permissionService.createPermission(PermissionTransformer.toDomain(permissionDto));
   }
 

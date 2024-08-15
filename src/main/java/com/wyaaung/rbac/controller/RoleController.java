@@ -8,7 +8,6 @@ import com.wyaaung.rbac.service.RoleService;
 import com.wyaaung.rbac.transformer.PermissionTransformer;
 import com.wyaaung.rbac.transformer.RoleTransformer;
 import com.wyaaung.rbac.transformer.RoleUsersTransformer;
-import com.wyaaung.rbac.validator.RoleValidator;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +25,9 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/role")
 public class RoleController {
   private final RoleService roleService;
-  private final RoleValidator roleValidator;
 
-  public RoleController(RoleService roleService, RoleValidator roleValidator) {
+  public RoleController(RoleService roleService) {
     this.roleService = roleService;
-    this.roleValidator = roleValidator;
   }
 
   @GetMapping
@@ -51,11 +48,9 @@ public class RoleController {
     return roleService.getPermissionsOfRole(roleName).stream().map(PermissionTransformer::toDto).toList();
   }
 
-  @PostMapping("/{roleName}")
+  @PostMapping
   @ResponseStatus(CREATED)
-  public void createRole(@PathVariable("roleName") final String roleName,
-                         @RequestBody final RoleDto roleDto) {
-    roleValidator.validateCreateRole(roleName, roleDto);
+  public void createRole(@RequestBody final RoleDto roleDto) {
     roleService.createRole(RoleTransformer.toDomain(roleDto));
   }
 
