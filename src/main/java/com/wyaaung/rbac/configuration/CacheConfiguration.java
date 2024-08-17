@@ -22,7 +22,6 @@ public class CacheConfiguration {
   }
 
   private CaffeineCache accessControlCache() {
-    return new CaffeineCache(
-      "accessControlCache", Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build());
+    return new CaffeineCache("accessControlCache", Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build());
   }
 }

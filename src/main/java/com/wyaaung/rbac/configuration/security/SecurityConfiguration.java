@@ -18,8 +18,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -28,13 +26,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
 
   private final String[] allowedOrigins;
+  private final String[] white_list_url;
   private final AuthenticationProvider authenticationProvider;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   public SecurityConfiguration(@Value("${security.allowed.origins}") String[] allowedOrigins,
+                               @Value("${security.white-list.urls}") String[] white_list_url,
                                AuthenticationProvider authenticationProvider,
                                JwtAuthenticationFilter jwtAuthenticationFilter) {
     this.allowedOrigins = allowedOrigins;
+    this.white_list_url = white_list_url;
     this.authenticationProvider = authenticationProvider;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
@@ -46,7 +47,8 @@ public class SecurityConfiguration {
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .exceptionHandling(withDefaults())
       .authorizeHttpRequests(
-        requests -> requests.requestMatchers(POST, "api/v1/auth/**").permitAll().anyRequest().authenticated()
+        requests -> requests.requestMatchers(white_list_url).permitAll()
+          .anyRequest().authenticated()
       ).sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authenticationProvider(authenticationProvider)
       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
