@@ -1,4 +1,5 @@
 drop table if exists role_permission cascade;
+drop table if exists access_token cascade;
 drop table if exists permission cascade;
 drop table if exists user_role cascade;
 drop table if exists role cascade;
@@ -30,6 +31,13 @@ CREATE TABLE user_account
     email_address     VARCHAR(255) NOT NULL UNIQUE
 );
 
+CREATE TABLE access_token (
+    token VARCHAR(255) PRIMARY KEY,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    username VARCHAR(100) REFERENCES user_account (username) ON DELETE SET NULL
+);
+
 -- Linking table between roles and permissions
 CREATE TABLE role_permission
 (
@@ -43,7 +51,7 @@ CREATE TABLE role_permission
 -- Linking table between users and roles
 CREATE TABLE user_role
 (
-    username  VARCHAR(255) NOT NULL,
+    username  VARCHAR(100) NOT NULL,
     role_name VARCHAR(50)  NOT NULL,
     PRIMARY KEY (username, role_name),
     FOREIGN KEY (username) REFERENCES user_account (username) ON DELETE CASCADE,
