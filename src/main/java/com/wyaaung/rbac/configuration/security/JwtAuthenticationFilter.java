@@ -45,18 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    final String authHeader = request.getHeader("Authorization");
+    final String authorization = request.getHeader(HEADER_STRING);
     final String jwtToken;
     final String username;
 
 
-    if (authHeader == null || !authHeader.startsWith(TOKEN_PREFIX)) {
+    if (authorization == null || !authorization.startsWith(TOKEN_PREFIX)) {
       LOGGER.warn("Bearer AccessToken Not Found");
       filterChain.doFilter(request, response);
       return;
     }
 
-    jwtToken = authHeader.substring(7);
+    jwtToken = authorization.substring(7);
     username = jwtService.extractUsername(jwtToken);
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
