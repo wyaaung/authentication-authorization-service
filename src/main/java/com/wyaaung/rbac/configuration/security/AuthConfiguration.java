@@ -22,7 +22,9 @@ public class AuthConfiguration {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> repository.getUser(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+    return username -> repository.getUser(username).orElseThrow(
+      () -> new UserNotFoundException(String.format("User '%s' does not exist", username))
+    );
   }
 
   @Bean
