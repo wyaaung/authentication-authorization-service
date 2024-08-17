@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -60,14 +61,14 @@ public class RoleController {
     roleService.deleteRole(roleName);
   }
 
-  @PostMapping("/{roleName}/permissions/{permissionName}")
+  @PutMapping("/{roleName}/permission/{permissionName}")
   @ResponseStatus(OK)
   public RoleDetails addPermissionToRole(@PathVariable("roleName") final String roleName,
                                          @PathVariable("permissionName") final String permissionName) {
     return roleService.addPermissionToRole(roleName, permissionName);
   }
 
-  @DeleteMapping("/{roleName}/permissions/{permissionName}")
+  @DeleteMapping("/{roleName}/permission/{permissionName}")
   @ResponseStatus(OK)
   public RoleDetails deletePermissionToRole(@PathVariable("roleName") final String roleName,
                                             @PathVariable("permissionName") final String permissionName) {
