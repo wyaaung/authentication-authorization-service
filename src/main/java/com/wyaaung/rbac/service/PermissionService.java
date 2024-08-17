@@ -53,7 +53,7 @@ public class PermissionService {
     permissionRepository.deletePermission(permissionName);
   }
 
-  private Permission getPermission(final String permissionName) {
+  public Permission getPermission(final String permissionName) {
     final Optional<Permission> optionalPermission = permissionRepository.getPermission(permissionName);
 
     if (!optionalPermission.isPresent()) {
