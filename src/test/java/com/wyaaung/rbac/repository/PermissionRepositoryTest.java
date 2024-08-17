@@ -85,8 +85,8 @@ public class PermissionRepositoryTest {
   public void testPermissionAssigneRoles() {
     Set<String> roles = permissionRepository.permissionAssigneRoles("read");
     assertEquals(3, roles.size());
-    assertTrue(roles.contains("user"));
-    assertTrue(roles.contains("manager"));
-    assertTrue(roles.contains("administrator"));
+    assertTrue(roles.stream().anyMatch(role -> role.equals("user")));
+    assertTrue(roles.stream().anyMatch(role -> role.equals("manager")));
+    assertTrue(roles.stream().anyMatch(role -> role.equals("administrator")));
   }
 }
