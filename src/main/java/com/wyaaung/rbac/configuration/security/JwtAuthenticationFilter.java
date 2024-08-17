@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
       boolean isTokenValid =
         tokenRepository.getToken(jwtToken).map(
-          accessToken -> accessToken.expiresAt().isBefore(Instant.now()) && accessToken.username().equals(username)
+          accessToken -> jwtService.isTokenExpired(accessToken.token()) && accessToken.username().equals(username)
         ).orElse(false);
 
       if (isTokenValid) {
