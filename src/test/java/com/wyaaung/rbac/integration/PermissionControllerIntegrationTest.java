@@ -62,7 +62,7 @@ public class PermissionControllerIntegrationTest {
   public void testGetAllPermissions() {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<PermissionDto[]> response = testRestTemplate.exchange(baseUrl, GET, request, PermissionDto[].class);
 
@@ -77,7 +77,7 @@ public class PermissionControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<PermissionDetailsDto> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, GET, request, PermissionDetailsDto.class);
 

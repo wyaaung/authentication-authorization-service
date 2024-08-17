@@ -67,7 +67,7 @@ public class RoleControllerIntegrationTest {
   public void testGetAllRoles() {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<RoleDto[]> response = testRestTemplate.exchange(baseUrl, GET, request, RoleDto[].class);
 
@@ -82,7 +82,7 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET, request, RoleUsersDto.class);
 
@@ -98,7 +98,7 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET, request, RoleUsersDto.class);
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -110,7 +110,7 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<PermissionDto[]> response = testRestTemplate.exchange(
       baseUrl + "/" + roleName + "/" + "permissions", GET, request, PermissionDto[].class);
@@ -127,7 +127,7 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<Void> request = new HttpEntity<>(headers);
+    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<Void> response = testRestTemplate.exchange(
       baseUrl + "/" + roleName + "/" + "permissions", GET, request, Void.class);
