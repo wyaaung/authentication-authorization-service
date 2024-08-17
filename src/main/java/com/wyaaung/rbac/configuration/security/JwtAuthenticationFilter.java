@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -24,9 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
   private final UserDetailsService userDetailsService;
   private final TokenRepository tokenRepository;
-
-  @Value("${jwt.header.string}")
-  public String HEADER_STRING;
 
   @Value("${jwt.token.prefix}")
   public String TOKEN_PREFIX;
@@ -45,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    final String authorization = request.getHeader(HEADER_STRING);
+    final String authorization = request.getHeader(AUTHORIZATION);
     final String jwtToken;
     final String username;
 
