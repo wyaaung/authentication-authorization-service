@@ -67,9 +67,9 @@ public class AuthenticationControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(registerUrl, request, AuthResponseDto.class);
+    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(registerUrl, 
+        new HttpEntity<>(requestBody, headers), AuthResponseDto.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -93,9 +93,9 @@ public class AuthenticationControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(authenticateUrl, request, AuthResponseDto.class);
+    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(authenticateUrl, 
+        new HttpEntity<>(requestBody, headers), AuthResponseDto.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();

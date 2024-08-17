@@ -67,9 +67,8 @@ public class RoleControllerIntegrationTest {
   public void testGetAllRoles() {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
-    ResponseEntity<RoleDto[]> response = testRestTemplate.exchange(baseUrl, GET, request, RoleDto[].class);
+    ResponseEntity<RoleDto[]> response = testRestTemplate.exchange(baseUrl, GET, new HttpEntity<>(headers), RoleDto[].class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -82,9 +81,8 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
-    ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET, request, RoleUsersDto.class);
+    ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET, new HttpEntity<>(headers), RoleUsersDto.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -98,9 +96,8 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
-    ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET, request, RoleUsersDto.class);
+    ResponseEntity<RoleUsersDto> response = testRestTemplate.exchange(baseUrl + "/" + roleName, GET,new HttpEntity<>(headers), RoleUsersDto.class);
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
 
@@ -110,10 +107,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<PermissionDto[]> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permissions", GET, request, PermissionDto[].class);
+      baseUrl + "/" + roleName + "/" + "permissions", GET, new HttpEntity<>(headers), PermissionDto[].class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -127,10 +123,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
     ResponseEntity<Void> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permissions", GET, request, Void.class);
+      baseUrl + "/" + roleName + "/" + "permissions", GET, new HttpEntity<>(headers), Void.class);
 
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
@@ -150,9 +145,9 @@ public class RoleControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, 
+        new HttpEntity<>(requestBody, headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(CREATED);
     assertTrue(roleService.getRole("analyst").name().equals("analyst"));
   }
@@ -172,9 +167,9 @@ public class RoleControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, 
+        new HttpEntity<>(requestBody, headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
   }
 
@@ -184,9 +179,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, 
+        new HttpEntity<>(headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThrows(RoleNotFoundException.class, () -> roleService.getRole(roleName));
   }
@@ -197,9 +192,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, 
+        new HttpEntity<>(headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
 
@@ -209,9 +204,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + roleName, DELETE, 
+        new HttpEntity<>(headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
   }
 
@@ -222,9 +217,10 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
+
     ResponseEntity<RoleDetails> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, PUT, request, RoleDetails.class);
+      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, PUT, 
+        new HttpEntity<>(headers), RoleDetails.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -238,9 +234,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
+
     ResponseEntity<Void> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, PUT, request, Void.class);
+      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, PUT, new HttpEntity<>(headers), Void.class);
 
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
@@ -252,10 +248,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
     ResponseEntity<RoleDetails> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, DELETE, request, RoleDetails.class);
+      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, DELETE, new HttpEntity<>(headers), RoleDetails.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -269,10 +264,9 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
     ResponseEntity<RoleDetails> response = testRestTemplate.exchange(
-      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, DELETE, request, RoleDetails.class);
+      baseUrl + "/" + roleName + "/" + "permission/" + permissionName, DELETE, new HttpEntity<>(headers), RoleDetails.class);
 
     assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
   }
@@ -296,9 +290,8 @@ public class RoleControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(loginUrl, request, AuthResponseDto.class);
+    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(loginUrl, new HttpEntity<>(requestBody, headers), AuthResponseDto.class);
 
     return response.getBody().accessToken();
   }

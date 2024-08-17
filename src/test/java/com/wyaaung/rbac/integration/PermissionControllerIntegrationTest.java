@@ -62,9 +62,8 @@ public class PermissionControllerIntegrationTest {
   public void testGetAllPermissions() {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
-    ResponseEntity<PermissionDto[]> response = testRestTemplate.exchange(baseUrl, GET, request, PermissionDto[].class);
+    ResponseEntity<PermissionDto[]> response = testRestTemplate.exchange(baseUrl, GET, new HttpEntity<>(headers), PermissionDto[].class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -77,9 +76,9 @@ public class PermissionControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity request = new HttpEntity<>(headers);
 
-    ResponseEntity<PermissionDetailsDto> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, GET, request, PermissionDetailsDto.class);
+    ResponseEntity<PermissionDetailsDto> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, GET, 
+        new HttpEntity<>(headers), PermissionDetailsDto.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -105,9 +104,9 @@ public class PermissionControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, 
+        new HttpEntity<>(requestBody, headers), Void.class);
 
     assertThat(response.getStatusCode()).isEqualTo(CREATED);
     assertTrue(permissionService.getPermission("analyst").name().equals("analyst"));
@@ -128,9 +127,9 @@ public class PermissionControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl, POST, 
+        new HttpEntity<>(requestBody, headers), Void.class);
 
     assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
   }
@@ -141,9 +140,9 @@ public class PermissionControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, 
+        new HttpEntity<>(headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThrows(PermissionNotFoundException.class, () -> permissionService.getPermission(permissionName));
   }
@@ -154,9 +153,9 @@ public class PermissionControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
-    HttpEntity<String> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, request, Void.class);
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, 
+        new HttpEntity<>(headers), Void.class);
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
 
@@ -179,9 +178,9 @@ public class PermissionControllerIntegrationTest {
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
-    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
-    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(loginUrl, request, AuthResponseDto.class);
+    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(loginUrl, 
+        new HttpEntity<>(requestBody, headers), AuthResponseDto.class);
 
     return response.getBody().accessToken();
   }
