@@ -35,7 +35,7 @@ public class PermissionRepositoryTest {
   }
 
   @Test
-  public void testPermissionExists() {
+  public void testPermissionsExist() {
     assertTrue(permissionRepository.permissionExists("read"));
     assertTrue(permissionRepository.permissionExists("write"));
     assertTrue(permissionRepository.permissionExists("delete"));
@@ -52,12 +52,12 @@ public class PermissionRepositoryTest {
   public void testGetPermission() {
     Optional<Permission> permission = permissionRepository.getPermission("read");
     assertTrue(permission.isPresent());
-    assertEquals("read", permission.get().name());
+    assertTrue(permission.get().name().equals("read"));
   }
 
   @Test
   public void testGetEmptyPermission() {
-    Optional<Permission> permission = permissionRepository.getPermission("sample");
+    Optional<Permission> permission = permissionRepository.getPermission("NOT_EXIST_AT_ALL");
     assertTrue(permission.isEmpty());
   }
 
@@ -68,7 +68,7 @@ public class PermissionRepositoryTest {
     );
     List<Permission> permissions = permissionRepository.getPermissions();
     Optional<Permission> permission = permissionRepository.getPermission("test_permission");
-    assertEquals("test_permission", permission.get().name());
+    assertTrue(permission.get().name().equals("test_permission"));
     assertEquals(4, permissions.size());
   }
 
