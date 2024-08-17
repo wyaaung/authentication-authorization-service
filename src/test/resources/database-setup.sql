@@ -33,8 +33,8 @@ CREATE TABLE user_account
 
 CREATE TABLE access_token (
     token VARCHAR(255) PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     username VARCHAR(100) REFERENCES user_account (username) ON DELETE SET NULL
 );
 
@@ -64,6 +64,7 @@ CREATE INDEX idx_role_permission_permission_name ON role_permission(permission_n
 CREATE INDEX idx_user_role_role_name ON user_role(role_name);
 CREATE INDEX idx_user_role_username ON user_role(username);
 CREATE INDEX idx_user_account_username ON user_account(username);
+CREATE INDEX idx_access_token_username ON access_token(username);
 
 -- Populate permissions
 INSERT INTO permission (name, description, display_name)
