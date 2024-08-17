@@ -50,7 +50,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/wyaaung/role-based-access-contro
+          images: ghcr.io/wyaaung/role-based-access-control
           tags: type=raw,${{ github.event.release.tag_name }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

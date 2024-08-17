@@ -1,0 +1,24 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Name of the tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  check-app-image-exists:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    steps:
+      # https://github.com/opencontainers/distribution-spec/blob/v1.0.1/spec.md#content-discovery
+      # TODO: Should clean up old builds in a more scheduled and automated manner.
+      - name: Check app image exists in registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ inputs.tag_name }}
+        run: |
+          curl -sf -H "Authorization: Bearer $(echo "$GITHUB_TOKEN" | base64 | tr -d '\n')" https://ghcr.io/v2/wyaaung/role-based-access-control/tags/list?n=500 | jq -r '.tags[]' | grep -xF "$TAG_NAME"
