@@ -1,4 +1,4 @@
-package com.wyaaung.rbac.unit.repository;
+package com.wyaaung.rbac.unit;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceUtils;
