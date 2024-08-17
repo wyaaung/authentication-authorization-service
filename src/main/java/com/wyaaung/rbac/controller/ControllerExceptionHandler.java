@@ -4,6 +4,7 @@ import com.wyaaung.rbac.dto.MessageDto;
 import com.wyaaung.rbac.exception.DuplicatePermissionException;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
+import com.wyaaung.rbac.exception.PermissionNotInRoleException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
 import com.wyaaung.rbac.exception.UserNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
@@ -64,5 +65,12 @@ public class ControllerExceptionHandler {
   public final MessageDto handleUserNotFoundException(final UserNotFoundException userNotFoundException) {
     LOGGER.warn(userNotFoundException.getMessage(), userNotFoundException);
     return new MessageDto(userNotFoundException.getMessage());
+  }
+
+  @ExceptionHandler(PermissionNotInRoleException.class)
+  @ResponseStatus(BAD_REQUEST)
+  public final MessageDto handlePermissionNotInRoleException(final PermissionNotInRoleException permissionNotInRoleException) {
+    LOGGER.error(permissionNotInRoleException.getMessage(), permissionNotInRoleException);
+    return new MessageDto(permissionNotInRoleException.getMessage());
   }
 }
