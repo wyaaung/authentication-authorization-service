@@ -4,6 +4,7 @@ import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.repository.mapper.PermissionRowMapper;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -58,5 +59,34 @@ public class PermissionRepositoryTest {
   public void testGetEmptyPermission() {
     Optional<Permission> permission = permissionRepository.getPermission("sample");
     assertTrue(permission.isEmpty());
+  }
+
+  @Test
+  public void testCreatePermission() {
+    permissionRepository.createPermission(
+      new Permission("test_permission", "test_permission_description", "Test Permission")
+    );
+    List<Permission> permissions = permissionRepository.getPermissions();
+    Optional<Permission> permission = permissionRepository.getPermission("test_permission");
+    assertEquals("test_permission", permission.get().name());
+    assertEquals(4, permissions.size());
+  }
+
+  @Test
+  public void testDeletePermission() {
+    permissionRepository.deletePermission("test_permission");
+    List<Permission> permissions = permissionRepository.getPermissions();
+    Optional<Permission> permission = permissionRepository.getPermission("test_permission");
+    assertTrue(permission.isEmpty());
+    assertEquals(3, permissions.size());
+  }
+
+  @Test
+  public void testPermissionAssigneRoles() {
+    Set<String> roles = permissionRepository.permissionAssigneRoles("read");
+    assertEquals(3, roles.size());
+    assertTrue(roles.contains("user"));
+    assertTrue(roles.contains("manager"));
+    assertTrue(roles.contains("administrator"));
   }
 }
