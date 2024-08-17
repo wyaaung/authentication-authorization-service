@@ -1,14 +1,13 @@
 package com.wyaaung.rbac.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.dto.AuthResponseDto;
 import com.wyaaung.rbac.dto.PermissionDetailsDto;
 import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.dto.RegisterDto;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.service.PermissionService;
-import com.wyaaung.rbac.unit.repository.RepositoryTestHelper;
+import com.wyaaung.rbac.unit.RepositoryTestHelper;
 import java.util.Objects;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,8 +21,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,6 +31,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -76,6 +74,7 @@ public class PermissionControllerIntegrationTest {
   @Test
   public void testGetPermission() {
     String permissionName = "read";
+
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
     HttpEntity<Void> request = new HttpEntity<>(headers);
@@ -147,6 +146,18 @@ public class PermissionControllerIntegrationTest {
     ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, request, Void.class);
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThrows(PermissionNotFoundException.class, () -> permissionService.getPermission(permissionName));
+  }
+
+  @Test
+  public void testDeleteNonExistingPermission() {
+    String permissionName = "NON_EXISTING";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(accessToken);
+    HttpEntity<String> request = new HttpEntity<>(headers);
+
+    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + permissionName, DELETE, request, Void.class);
+    assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
 
   private String obtainAccessToken() {

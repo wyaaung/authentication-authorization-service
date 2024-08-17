@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wyaaung.rbac.dto.AuthRequestDto;
 import com.wyaaung.rbac.dto.AuthResponseDto;
 import com.wyaaung.rbac.dto.RegisterDto;
-import com.wyaaung.rbac.unit.repository.RepositoryTestHelper;
+import com.wyaaung.rbac.unit.RepositoryTestHelper;
 import java.util.Objects;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
