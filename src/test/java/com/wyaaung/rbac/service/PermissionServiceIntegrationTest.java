@@ -6,9 +6,11 @@ import com.wyaaung.rbac.exception.DuplicatePermissionException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
 import com.wyaaung.rbac.repository.PermissionRepository;
+import com.wyaaung.rbac.repository.RepositoryTestHelper;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -35,8 +37,12 @@ public class PermissionServiceIntegrationTest {
   @Autowired
   private UserRolePermissionRepository userRolePermissionRepository;
 
+  @Autowired
+  private DataSource dataSource;
+
   @BeforeAll
   public void setUp() {
+    RepositoryTestHelper.resetDatabase(dataSource);
   }
 
   @Test
