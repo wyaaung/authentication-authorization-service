@@ -66,7 +66,7 @@ public class RoleService {
     }
 
     final Set<String> usersWithRole =
-      getUsersWithRole(roleName).users().stream().map((user) -> user.username()).collect(Collectors.toSet());
+      getUsersWithRole(roleName).users().stream().map((user) -> user.getUsername()).collect(Collectors.toSet());
     if (!usersWithRole.isEmpty()) {
       throw new ValidationException("Role is assigned to users: %s".formatted(String.join(", ", usersWithRole)));
     }

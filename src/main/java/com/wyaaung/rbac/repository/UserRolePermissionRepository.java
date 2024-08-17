@@ -54,28 +54,28 @@ public class UserRolePermissionRepository {
 
   public UserDetails getRolesAndPermissionsByUser(final User user) {
     final String sql = """
-      SELECT
-    r.name AS role_name,
-    r.description AS role_description,
-    r.display_name AS role_display_name,
-    p.name AS permission_name,
-    p.description AS permission_description,
-    p.display_name AS permission_display_name
-      FROM
-          permission p
-      JOIN
-          role_permission rp ON p.name = rp.permission_name
-      JOIN
-          role r ON rp.role_name = r.name
-      JOIN
-          user_role ur ON r.name = ur.role_name
-      JOIN
-          user_account u ON ur.username = u.username
-      WHERE
-          u.username = :username;
-      """;
+        SELECT
+      r.name AS role_name,
+      r.description AS role_description,
+      r.display_name AS role_display_name,
+      p.name AS permission_name,
+      p.description AS permission_description,
+      p.display_name AS permission_display_name
+        FROM
+            permission p
+        JOIN
+            role_permission rp ON p.name = rp.permission_name
+        JOIN
+            role r ON rp.role_name = r.name
+        JOIN
+            user_role ur ON r.name = ur.role_name
+        JOIN
+            user_account u ON ur.username = u.username
+        WHERE
+            u.username = :username;
+        """;
 
-    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("username", user.username());
+    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("username", user.getUsername());
 
     return namedParameterJdbcTemplate.query(sql, parameters, userDetailsExtractor);
   }

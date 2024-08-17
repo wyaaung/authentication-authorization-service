@@ -63,4 +63,20 @@ public class UserRepository {
       return Optional.empty();
     }
   }
+
+  public void registerUser(User user) {
+    final String sql = """
+      INSERT INTO user_account (username, full_name, password, email_address)
+      VALUES
+      (:username, :full_name, :password, :email_address);
+      """;
+
+    final SqlParameterSource paramSource = new MapSqlParameterSource()
+      .addValue("username", user.getUsername())
+      .addValue("full_name", user.getFullName())
+      .addValue("password", user.getPassword())
+      .addValue("email_address", user.getEmailAddress());
+
+    namedParameterJdbcTemplate.update(sql, paramSource);
+  }
 }
