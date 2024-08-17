@@ -1,7 +1,8 @@
-package com.wyaaung.rbac.repository;
+package com.wyaaung.rbac.unit.repository;
 
 import com.wyaaung.rbac.domain.Role;
 import com.wyaaung.rbac.domain.RoleUsers;
+import com.wyaaung.rbac.repository.RoleRepository;
 import com.wyaaung.rbac.repository.mapper.RoleRowMapper;
 import java.util.List;
 import java.util.Optional;

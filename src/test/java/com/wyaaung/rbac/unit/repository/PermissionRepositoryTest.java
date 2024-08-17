@@ -1,6 +1,7 @@
-package com.wyaaung.rbac.repository;
+package com.wyaaung.rbac.unit.repository;
 
 import com.wyaaung.rbac.domain.Permission;
+import com.wyaaung.rbac.repository.PermissionRepository;
 import com.wyaaung.rbac.repository.mapper.PermissionRowMapper;
 import java.util.List;
 import java.util.Optional;
