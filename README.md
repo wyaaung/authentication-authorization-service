@@ -1,6 +1,6 @@
-# Role Based Access Control (JWT)
+# Authentication Service (JWT)
 
-This is just an idea of RBAC. This could be considered a service for orchestrated app to authentication and authorization.
+This is just an idea of Role Based Access Control (RBAC). This could be considered a service for orchestrated app to authentication and authorization.
 
 ## Endpoints
 
@@ -35,6 +35,7 @@ This is just an idea of RBAC. This could be considered a service for orchestrate
 
 * `GET /auth/register`: Register a new user. This returns both access and refresh token.
 * `GET /auth/authenticate`: Authenticate a user. This returns both access and refresh token.
+* `GET /auth/refresh-token`: Refresh an access token of a user. This returns both access and refresh token.
 
 ## Prerequisites
 
