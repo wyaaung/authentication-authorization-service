@@ -2,10 +2,7 @@ package com.wyaaung.rbac.repository;
 
 import com.wyaaung.rbac.domain.AccessToken;
 import com.wyaaung.rbac.domain.User;
-
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,40 +16,6 @@ public class TokenRepository {
 
   public TokenRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-  }
-
-  public List<AccessToken> getTokens(final String username) {
-    final String sql = """
-        SELECT
-          t.token,
-          t.created_at,
-          t.expires_at
-          t.username
-        FROM access_token t
-        INNER JOIN user_account u
-        ON
-          t.username = u.username
-        WHERE
-          u.username = :username
-      """;
-
-    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("username", username);
-
-    return namedParameterJdbcTemplate.query(sql, parameters, resultSet -> {
-      final List<AccessToken> result = new ArrayList<>();
-
-      while (resultSet.next()) {
-        result.add(
-          new AccessToken(
-            resultSet.getString("token"),
-            resultSet.getTimestamp("created_at").toInstant(),
-            resultSet.getTimestamp("expires_at").toInstant(),
-            resultSet.getString("username")
-          )
-        );
-      }
-      return result;
-    });
   }
 
   public Optional<AccessToken> getToken(final String accessToken) {
@@ -96,9 +59,9 @@ public class TokenRepository {
 
   public void deleteTokensOfUser(final User user) {
     final String sql = """
-        DELETE FROM access_token
-        WHERE username = :username
-        """;
+      DELETE FROM access_token
+      WHERE username = :username
+      """;
 
     final SqlParameterSource paramSource = new MapSqlParameterSource()
       .addValue("username", user.getUsername());
