@@ -2,6 +2,7 @@ package com.wyaaung.rbac.service;
 
 import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.domain.UserDetails;
+import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.UserNotFoundException;
 import com.wyaaung.rbac.repository.UserRepository;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
@@ -28,7 +29,17 @@ public class UserService {
     return userRolePermissionRepository.getRolesAndPermissionsByUser(user);
   }
 
-  private User getUser(final String username) {
+  public void registerUser(final User user) {
+    final Optional<User> optionalUser = userRepository.getUser(user.getUsername());
+
+    if (optionalUser.isPresent()) {
+      throw new DuplicateRoleException(String.format("User '%s' already exists", user.getUsername()));
+    }
+
+    userRepository.registerUser(user);
+  }
+
+  public User getUser(final String username) {
     final Optional<User> optionalUser = userRepository.getUser(username);
 
     if (!optionalUser.isPresent()) {
