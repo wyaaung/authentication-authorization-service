@@ -65,10 +65,6 @@ public class AuthenticationService {
   }
 
   public AuthResponse refreshToken(final String authorization) {
-    if (authorization == null) {
-      throw new IllegalArgumentException("Missing Authorization Token");
-    }
-
     if (!authorization.startsWith(TOKEN_PREFIX)) {
       throw new IllegalArgumentException("Malformed Authorization request");
     }

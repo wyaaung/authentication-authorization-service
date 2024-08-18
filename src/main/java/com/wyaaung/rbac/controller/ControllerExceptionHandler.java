@@ -3,6 +3,7 @@ package com.wyaaung.rbac.controller;
 import com.wyaaung.rbac.dto.MessageDto;
 import com.wyaaung.rbac.exception.DuplicatePermissionException;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
+import com.wyaaung.rbac.exception.DuplicateUserException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.PermissionNotInRoleException;
 import com.wyaaung.rbac.exception.RoleNotFoundException;
@@ -79,5 +80,12 @@ public class ControllerExceptionHandler {
   public final MessageDto handleIllegalArgumentException(final IllegalArgumentException illegalArgumentException) {
     LOGGER.warn(illegalArgumentException.getMessage(), illegalArgumentException);
     return new MessageDto(illegalArgumentException.getMessage());
+  }
+
+  @ExceptionHandler(DuplicateUserException.class)
+  @ResponseStatus(CONFLICT)
+  public final MessageDto handleDuplicateUserException(final DuplicateUserException duplicateUserException) {
+    LOGGER.error(duplicateUserException.getMessage(), duplicateUserException);
+    return new MessageDto(duplicateUserException.getMessage());
   }
 }
