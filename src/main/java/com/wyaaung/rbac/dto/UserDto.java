@@ -1,4 +1,9 @@
 package com.wyaaung.rbac.dto;
 
-public record UserDto(String username, String fullName, String emailAddress) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record UserDto(
+  @JsonProperty("username") String username,
+  @JsonProperty("full_name") String fullName,
+  @JsonProperty("email_address") String emailAddress) {
 }

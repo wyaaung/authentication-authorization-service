@@ -1,6 +1,8 @@
 package com.wyaaung.rbac.repository;
 
 import com.wyaaung.rbac.domain.AccessToken;
+import com.wyaaung.rbac.domain.User;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,18 @@ public class TokenRepository {
       .addValue("created_at", Timestamp.from(accessToken.createdAt()))
       .addValue("expires_at", Timestamp.from(accessToken.expiresAt()))
       .addValue("username", accessToken.username());
+
+    namedParameterJdbcTemplate.update(sql, paramSource);
+  }
+
+  public void deleteTokensOfUser(final User user) {
+    final String sql = """
+        DELETE FROM access_token
+        WHERE username = :username
+        """;
+
+    final SqlParameterSource paramSource = new MapSqlParameterSource()
+      .addValue("username", user.getUsername());
 
     namedParameterJdbcTemplate.update(sql, paramSource);
   }

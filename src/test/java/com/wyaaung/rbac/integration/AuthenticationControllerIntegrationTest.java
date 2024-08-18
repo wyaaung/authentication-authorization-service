@@ -1,14 +1,15 @@
 package com.wyaaung.rbac.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.dto.AuthRequestDto;
 import com.wyaaung.rbac.dto.AuthResponseDto;
 import com.wyaaung.rbac.dto.RegisterDto;
+import com.wyaaung.rbac.service.AuthenticationService;
 import com.wyaaung.rbac.unit.RepositoryTestHelper;
 import java.util.Objects;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +20,27 @@ import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class AuthenticationControllerIntegrationTest {
   @Autowired
   protected TestRestTemplate testRestTemplate;
+
   @Autowired
   protected CacheManager cacheManager;
+
   @LocalServerPort
   private int port;
+
   @Autowired
   private DataSource dataSource;
+
+  @Autowired
+  private AuthenticationService authenticationService;
+
   private String baseUrl;
 
   @BeforeAll
@@ -47,7 +51,6 @@ public class AuthenticationControllerIntegrationTest {
   }
 
   @Test
-  @Order(1)
   public void testRegisterUser() {
     String registerUrl = baseUrl + "/register";
 
@@ -56,10 +59,10 @@ public class AuthenticationControllerIntegrationTest {
     try {
       requestBody = objectMapper.writeValueAsString(
         new RegisterDto(
-          "test_auth",
-          "test_auth_name",
-          "test_auth_password",
-          "test_auth@email.com")
+          "test_register",
+          "test_register_name",
+          "test_register_password",
+          "test_register@email.com")
       );
     } catch (Exception exception) {
       exception.printStackTrace();
@@ -78,8 +81,11 @@ public class AuthenticationControllerIntegrationTest {
   }
 
   @Test
-  @Order(2)
   public void testAuthenticateUser() {
+    authenticationService.registerUser(
+      new User("test_auth", "test_auth_name", "test_auth_password", "test_auth@email.com")
+    );
+
     String authenticateUrl = baseUrl + "/authenticate";
     AuthRequestDto authRequestDto = new AuthRequestDto("test_auth", "test_auth_password");
 

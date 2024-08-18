@@ -52,6 +52,8 @@ public class AuthenticationService {
     String jwtToken = jwtService.generateToken(user);
     String refreshToken = jwtService.generateRefreshToken(user);
 
+    tokenRepository.deleteTokensOfUser(user);
+
     tokenRepository.saveToken(
       new AccessToken(jwtToken, Instant.now(), jwtService.extractExpiration(refreshToken).toInstant(), user.getUsername())
     );
