@@ -45,15 +45,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     final String authorization = request.getHeader(AUTHORIZATION);
-    final String jwtToken;
-    final String username;
-
 
     if (authorization == null || !authorization.startsWith(TOKEN_PREFIX)) {
       LOGGER.warn("Bearer AccessToken Not Found");
       filterChain.doFilter(request, response);
       return;
     }
+
+    final String jwtToken;
+    final String username;
 
     jwtToken = authorization.substring(7);
     username = jwtService.extractUsername(jwtToken);
