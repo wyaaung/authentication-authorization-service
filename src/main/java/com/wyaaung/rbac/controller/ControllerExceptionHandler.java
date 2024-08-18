@@ -28,7 +28,7 @@ public class ControllerExceptionHandler {
   @ExceptionHandler(ValidationException.class)
   @ResponseStatus(BAD_REQUEST)
   public final MessageDto handleValidationException(final ValidationException validationException) {
-    LOGGER.error(validationException.getMessage(), validationException);
+    LOGGER.warn(validationException.getMessage(), validationException);
     return new MessageDto(validationException.getMessage());
   }
 
@@ -70,7 +70,14 @@ public class ControllerExceptionHandler {
   @ExceptionHandler(PermissionNotInRoleException.class)
   @ResponseStatus(BAD_REQUEST)
   public final MessageDto handlePermissionNotInRoleException(final PermissionNotInRoleException permissionNotInRoleException) {
-    LOGGER.error(permissionNotInRoleException.getMessage(), permissionNotInRoleException);
+    LOGGER.warn(permissionNotInRoleException.getMessage(), permissionNotInRoleException);
     return new MessageDto(permissionNotInRoleException.getMessage());
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  @ResponseStatus(BAD_REQUEST)
+  public final MessageDto handleIllegalArgumentException(final IllegalArgumentException illegalArgumentException) {
+    LOGGER.warn(illegalArgumentException.getMessage(), illegalArgumentException);
+    return new MessageDto(illegalArgumentException.getMessage());
   }
 }
