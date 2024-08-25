@@ -8,6 +8,7 @@ import com.wyaaung.rbac.repository.UserRepository;
 import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,10 +21,12 @@ public class UserService {
     this.userRolePermissionRepository = userRolePermissionRepository;
   }
 
+  @Cacheable(value = "UserCache")
   public List<User> getUsers() {
     return userRepository.getUsers();
   }
 
+  @Cacheable(value = "UserCache", key = "{#username}")
   public UserDetails getRolesAndPermissionsByUser(final String username) {
     User user = getUser(username);
     return userRolePermissionRepository.getRolesAndPermissionsByUser(user);
@@ -39,6 +42,7 @@ public class UserService {
     userRepository.registerUser(user);
   }
 
+  @Cacheable(value = "UserCache", key = "{#username}")
   public User getUser(final String username) {
     final Optional<User> optionalUser = userRepository.getUser(username);
 

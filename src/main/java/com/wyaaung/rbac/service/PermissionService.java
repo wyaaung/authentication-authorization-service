@@ -10,6 +10,7 @@ import com.wyaaung.rbac.repository.UserRolePermissionRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,10 +23,12 @@ public class PermissionService {
     this.userRolePermissionRepository = userRolePermissionRepository;
   }
 
+  @Cacheable("PermissionCache")
   public List<Permission> getPermissions() {
     return permissionRepository.getPermissions();
   }
 
+  @Cacheable(value = "PermissionCache", key = "{#permissionName}")
   public PermissionDetails getRolesAndUsersWithPermission(final String permissionName) {
     Permission permission = getPermission(permissionName);
     return userRolePermissionRepository.getRolesAndUsersByPermission(permission);
