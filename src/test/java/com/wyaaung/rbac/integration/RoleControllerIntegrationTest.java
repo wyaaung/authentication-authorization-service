@@ -103,7 +103,7 @@ public class RoleControllerIntegrationTest {
 
   @Test
   public void testGetPermissionsOfRole() {
-    String roleName = "manager";
+    String roleName = "administrator";
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
@@ -115,6 +115,7 @@ public class RoleControllerIntegrationTest {
     assertThat(response.getBody()).isNotNull();
     assertTrue(Arrays.stream(response.getBody()).anyMatch(permission -> permission.name().equals("read")));
     assertTrue(Arrays.stream(response.getBody()).anyMatch(permission -> permission.name().equals("write")));
+    assertTrue(Arrays.stream(response.getBody()).anyMatch(permission -> permission.name().equals("delete")));
   }
 
   @Test

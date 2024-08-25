@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,15 +34,18 @@ public class RoleService {
     this.rolePermissionRepository = rolePermissionRepository;
   }
 
+  @Cacheable(value = "RoleCache")
   public List<Role> getRoles() {
     return roleRepository.getRoles();
   }
 
+  @Cacheable(value = "RoleCache", key = "{#roleName}")
   public RoleUsers getUsersWithRole(final String roleName) {
     Role role = getRole(roleName);
     return roleRepository.getUsersWithRole(role);
   }
 
+  @Cacheable(value = "RoleCache", key = "{#roleName}")
   public List<Permission> getPermissionsOfRole(final String roleName) {
     if (!roleExists(roleName)) {
       throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
