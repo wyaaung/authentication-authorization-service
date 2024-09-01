@@ -1,6 +1,5 @@
 package com.wyaaung.rbac.repository;
 
-import com.wyaaung.rbac.domain.Permission;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,12 +15,10 @@ public class RolePermissionRepository {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
   }
 
-  public List<Permission> getPermissionsOfRole(final String roleName) {
+  public List<String> getPermissionsOfRole(final String roleName) {
     final String sql = """
       SELECT
-        p.name AS permission_name,
-        p.description AS permission_description,
-        p.display_name AS permission_display_name
+        p.name AS permission_name
       FROM
         role_permission rp
       JOIN
@@ -34,13 +31,9 @@ public class RolePermissionRepository {
       .addValue("role_name", roleName);
 
     return namedParameterJdbcTemplate.query(sql, paramSource, (resultSet -> {
-      List<Permission> permissions = new ArrayList<>();
+      List<String> permissions = new ArrayList<>();
       while (resultSet.next()) {
-        permissions.add(new Permission(
-          resultSet.getString("permission_name"),
-          resultSet.getString("permission_description"),
-          resultSet.getString("permission_display_name")
-        ));
+        permissions.add(resultSet.getString("permission_name"));
       }
       return permissions;
     }));

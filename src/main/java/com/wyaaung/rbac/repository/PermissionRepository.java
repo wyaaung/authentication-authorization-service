@@ -1,7 +1,6 @@
 package com.wyaaung.rbac.repository;
 
 import com.wyaaung.rbac.domain.Permission;
-import com.wyaaung.rbac.repository.mapper.PermissionRowMapper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,13 +14,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class PermissionRepository {
-
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-  private final PermissionRowMapper permissionRowMapper;
 
-  public PermissionRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate, PermissionRowMapper permissionRowMapper) {
+  public PermissionRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    this.permissionRowMapper = permissionRowMapper;
   }
 
   public boolean permissionExists(final String permissionName) {
@@ -71,7 +67,14 @@ public class PermissionRepository {
     final SqlParameterSource parameters = new MapSqlParameterSource().addValue("permission_name", permissionName);
 
     try {
-      return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, permissionRowMapper));
+      return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, (resultSet, rowNum) ->
+          new Permission(
+            resultSet.getString("name"),
+            resultSet.getString("description"),
+            resultSet.getString("display_name")
+          )
+        )
+      );
     } catch (EmptyResultDataAccessException ignored) {
       return Optional.empty();
     }
@@ -85,9 +88,9 @@ public class PermissionRepository {
       """;
 
     final SqlParameterSource paramSource = new MapSqlParameterSource()
-      .addValue("name", permission.name())
-      .addValue("description", permission.description())
-      .addValue("display_name", permission.displayName());
+      .addValue("name", permission.getName())
+      .addValue("description", permission.getDescription())
+      .addValue("display_name", permission.getDisplayName());
 
     namedParameterJdbcTemplate.update(sql, paramSource);
   }
