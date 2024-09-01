@@ -17,6 +17,7 @@ public class JwtUtils {
   }
 
   public static void responseOutputStream(Logger logger, HttpServletResponse response, String errorMessage) {
+    logger.warn(errorMessage);
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     final Map<String, Object> body = new HashMap<>();
     body.put("timestamp", Instant.now().toEpochMilli());
