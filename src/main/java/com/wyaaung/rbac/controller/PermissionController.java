@@ -3,7 +3,6 @@ package com.wyaaung.rbac.controller;
 import com.wyaaung.rbac.dto.PermissionDetailsDto;
 import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.service.PermissionService;
-import com.wyaaung.rbac.transformer.PermissionDetailsTransformer;
 import com.wyaaung.rbac.transformer.PermissionTransformer;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,7 +35,7 @@ public class PermissionController {
   @GetMapping("/{permissionName}")
   @ResponseStatus(OK)
   public PermissionDetailsDto getPermission(@PathVariable("permissionName") final String permissionName) {
-    return PermissionDetailsTransformer.toDto(permissionService.getRolesAndUsersWithPermission(permissionName));
+    return PermissionTransformer.toPermissionDetailsDto(permissionService.getRolesAndUsersWithPermission(permissionName));
   }
 
   @PostMapping

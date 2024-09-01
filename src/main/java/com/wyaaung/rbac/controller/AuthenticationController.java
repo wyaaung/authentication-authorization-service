@@ -4,9 +4,12 @@ import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.dto.AuthRequestDto;
 import com.wyaaung.rbac.dto.AuthResponseDto;
 import com.wyaaung.rbac.dto.RegisterDto;
+import com.wyaaung.rbac.dto.TokenDto;
+import com.wyaaung.rbac.dto.UserDetailsDto;
 import com.wyaaung.rbac.service.AuthenticationService;
 import com.wyaaung.rbac.transformer.AuthResponseTransformer;
-import com.wyaaung.rbac.transformer.UserDetailsTransformer;
+import com.wyaaung.rbac.transformer.TokenTransformer;
+import com.wyaaung.rbac.transformer.UserTransformer;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,8 +31,8 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   @ResponseStatus(OK)
-  public AuthResponseDto registerUser(@RequestBody RegisterDto registerDto) {
-    return AuthResponseTransformer.toDto(authenticationService.registerUser(UserDetailsTransformer.toUserFromRegisterDto(registerDto)));
+  public UserDetailsDto registerUser(@RequestBody RegisterDto registerDto) {
+    return UserTransformer.toUserDetailsDto(authenticationService.registerUser(UserTransformer.toUserFromRegisterDto(registerDto)));
   }
 
   @PostMapping("/authenticate")
@@ -43,7 +46,7 @@ public class AuthenticationController {
 
   @PostMapping("/refresh-token")
   @ResponseStatus(OK)
-  public AuthResponseDto refreshToken(@RequestHeader(AUTHORIZATION) String authorization) {
-    return AuthResponseTransformer.toDto(authenticationService.refreshToken(authorization));
+  public TokenDto refreshToken(@RequestHeader(AUTHORIZATION) String authorization) {
+    return TokenTransformer.toDto(authenticationService.refreshToken(authorization));
   }
 }

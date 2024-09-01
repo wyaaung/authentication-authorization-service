@@ -3,7 +3,6 @@ package com.wyaaung.rbac.controller;
 import com.wyaaung.rbac.dto.UserDetailsDto;
 import com.wyaaung.rbac.dto.UserDto;
 import com.wyaaung.rbac.service.UserService;
-import com.wyaaung.rbac.transformer.UserDetailsTransformer;
 import com.wyaaung.rbac.transformer.UserTransformer;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +31,6 @@ public class UserController {
   @GetMapping("/{username}")
   @ResponseStatus(OK)
   public UserDetailsDto getUser(@PathVariable("username") final String username) {
-    return UserDetailsTransformer.toDto(userService.getRolesAndPermissionsByUser(username));
+    return UserTransformer.toUserDetailsDto(userService.getUser(username));
   }
 }

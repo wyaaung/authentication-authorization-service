@@ -1,11 +1,9 @@
 package com.wyaaung.rbac.controller;
 
-import com.wyaaung.rbac.domain.RoleDetails;
-import com.wyaaung.rbac.dto.PermissionDto;
 import com.wyaaung.rbac.dto.RoleDto;
+import com.wyaaung.rbac.dto.RolePermissionsDto;
 import com.wyaaung.rbac.dto.RoleUsersDto;
 import com.wyaaung.rbac.service.RoleService;
-import com.wyaaung.rbac.transformer.PermissionTransformer;
 import com.wyaaung.rbac.transformer.RoleTransformer;
 import com.wyaaung.rbac.transformer.RoleUsersTransformer;
 import java.util.List;
@@ -45,8 +43,8 @@ public class RoleController {
 
   @GetMapping("/{roleName}/permissions")
   @ResponseStatus(OK)
-  public List<PermissionDto> getPermissionsOfRole(@PathVariable("roleName") final String roleName) {
-    return roleService.getPermissionsOfRole(roleName).stream().map(PermissionTransformer::toDto).toList();
+  public RolePermissionsDto getPermissionsOfRole(@PathVariable("roleName") final String roleName) {
+    return new RolePermissionsDto(roleName, roleService.getPermissionsOfRole(roleName));
   }
 
   @PostMapping
@@ -63,15 +61,15 @@ public class RoleController {
 
   @PutMapping("/{roleName}/permission/{permissionName}")
   @ResponseStatus(OK)
-  public RoleDetails addPermissionToRole(@PathVariable("roleName") final String roleName,
-                                         @PathVariable("permissionName") final String permissionName) {
-    return roleService.addPermissionToRole(roleName, permissionName);
+  public RolePermissionsDto addPermissionToRole(@PathVariable("roleName") final String roleName,
+                                                @PathVariable("permissionName") final String permissionName) {
+    return new RolePermissionsDto(roleName, roleService.addPermissionToRole(roleName, permissionName));
   }
 
   @DeleteMapping("/{roleName}/permission/{permissionName}")
   @ResponseStatus(OK)
-  public RoleDetails deletePermissionToRole(@PathVariable("roleName") final String roleName,
-                                            @PathVariable("permissionName") final String permissionName) {
-    return roleService.deletePermissionToRole(roleName, permissionName);
+  public RolePermissionsDto deletePermissionToRole(@PathVariable("roleName") final String roleName,
+                                                   @PathVariable("permissionName") final String permissionName) {
+    return new RolePermissionsDto(roleName, roleService.deletePermissionToRole(roleName, permissionName));
   }
 }
