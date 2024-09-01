@@ -255,6 +255,30 @@ public class AuthenticationControllerIntegrationTest {
     assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
   }
 
+  @Test
+  public void testRefreshTokenWithInvalidToken() {
+    authenticationService.authenticateUser(
+      new User(
+        "test_refresh_user",
+        "test_refresh_user_name",
+        "test_refresh_user_password",
+        "test_refresh_user@email.com",
+        null,
+        null));
+    String authenticateUrl = baseUrl + "/refresh-token";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Content-Type", "application/json");
+    headers.setBearerAuth(
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0X3Rlc3RfdGVzdF9mb3JfUkFORE9NIiwiaWF0IjoxNzI1MTg5NTIzLCJleHAiOjE3MjUxODk1MjN9" +
+        ".eTe8KGMxR_U0rpu0o7JxHnMcrL_kUMzP0xQUeGLMoeY");
+
+    ResponseEntity<Void> response =
+      testRestTemplate.postForEntity(authenticateUrl, new HttpEntity<>(headers), Void.class);
+
+    assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+  }
+
   private String obtainRefreshToken() {
     authenticationService.registerUser(
       new User(
