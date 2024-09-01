@@ -1,6 +1,8 @@
 package com.wyaaung.rbac.domain;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,45 +11,19 @@ public class User implements UserDetails {
   private String fullName;
   private String password;
   private String emailAddress;
-
-  public User(String username, String fullName, String password, String emailAddress) {
-    this.username = username;
-    this.fullName = fullName;
-    this.password = password;
-    this.emailAddress = emailAddress;
-  }
+  private List<String> roles;
+  private List<String> permissions;
 
   public User() {
   }
 
-  public String getFullName() {
-    return fullName;
-  }
-
-  public void setFullName(String fullName) {
+  public User(String username, String fullName, String password, String emailAddress, List<String> roles, List<String> permissions) {
+    this.username = username;
     this.fullName = fullName;
-  }
-
-  public String getEmailAddress() {
-    return emailAddress;
-  }
-
-  public void setEmailAddress(String emailAddress) {
-    this.emailAddress = emailAddress;
-  }
-
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return null;
-  }
-
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
     this.password = password;
+    this.emailAddress = emailAddress;
+    this.roles = roles;
+    this.permissions = permissions;
   }
 
   @Override
@@ -77,5 +53,65 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return null;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getEmailAddress() {
+    return emailAddress;
+  }
+
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+  }
+
+  public List<String> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<String> roles) {
+    this.roles = roles;
+  }
+
+  public List<String> getPermissions() {
+    return permissions;
+  }
+
+  public void setPermissions(List<String> permissions) {
+    this.permissions = permissions;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    User user = (User) o;
+    return Objects.equals(username, user.username) && Objects.equals(fullName, user.fullName)
+      && Objects.equals(password, user.password) && Objects.equals(emailAddress, user.emailAddress)
+      && Objects.equals(roles, user.roles) && Objects.equals(permissions, user.permissions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(username, fullName, password, emailAddress, roles, permissions);
   }
 }

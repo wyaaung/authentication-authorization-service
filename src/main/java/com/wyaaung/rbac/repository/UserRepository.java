@@ -20,7 +20,7 @@ public class UserRepository {
 
   public List<User> getUsers() {
     final String sql = """
-        SELECT username, full_name, password, email_address
+        SELECT username, full_name, email_address
         FROM user_account
       """;
 
@@ -28,14 +28,12 @@ public class UserRepository {
       final List<User> result = new ArrayList<>();
 
       while (resultSet.next()) {
-        result.add(
-          new User(
-            resultSet.getString("username"),
-            resultSet.getString("full_name"),
-            resultSet.getString("password"),
-            resultSet.getString("email_address")
-          )
-        );
+        User user = new User();
+        user.setUsername(resultSet.getString("username"));
+        user.setFullName(resultSet.getString("full_name"));
+        user.setEmailAddress(resultSet.getString("email_address"));
+
+        result.add(user);
       }
       return result;
     });
@@ -52,12 +50,13 @@ public class UserRepository {
 
     try {
       return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, (resultSet, rowNum) -> {
-        return new User(
-          resultSet.getString("username"),
-          resultSet.getString("full_name"),
-          resultSet.getString("password"),
-          resultSet.getString("email_address")
-        );
+        User user = new User();
+        user.setUsername(resultSet.getString("username"));
+        user.setFullName(resultSet.getString("full_name"));
+        user.setPassword(resultSet.getString("password"));
+        user.setEmailAddress(resultSet.getString("email_address"));
+
+        return user;
       }));
     } catch (EmptyResultDataAccessException ignored) {
       return Optional.empty();

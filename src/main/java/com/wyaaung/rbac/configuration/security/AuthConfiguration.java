@@ -5,7 +5,6 @@ import com.wyaaung.rbac.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,21 +13,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AuthConfiguration {
-  private final UserRepository repository;
 
-  public AuthConfiguration(UserRepository repository) {
-    this.repository = repository;
+  private final UserRepository userRepository;
+
+  public AuthConfiguration(UserRepository userRepository) {
+    this.userRepository = userRepository;
   }
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> repository.getUser(username).orElseThrow(
+    return username -> userRepository.getUser(username).orElseThrow(
       () -> new UserNotFoundException(String.format("User '%s' does not exist", username))
     );
   }
 
   @Bean
-  public AuthenticationProvider authenticationProvider() {
+  public DaoAuthenticationProvider daoAuthenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
     authProvider.setUserDetailsService(userDetailsService());
     authProvider.setPasswordEncoder(passwordEncoder());

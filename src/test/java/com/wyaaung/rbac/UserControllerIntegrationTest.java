@@ -1,12 +1,11 @@
-package com.wyaaung.rbac.integration;
+package com.wyaaung.rbac;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wyaaung.rbac.dto.AuthResponseDto;
-import com.wyaaung.rbac.dto.RegisterDto;
+import com.wyaaung.rbac.domain.AuthResponse;
+import com.wyaaung.rbac.domain.User;
 import com.wyaaung.rbac.dto.UserDetailsDto;
 import com.wyaaung.rbac.dto.UserDto;
+import com.wyaaung.rbac.service.AuthenticationService;
 import com.wyaaung.rbac.service.UserService;
-import com.wyaaung.rbac.unit.RepositoryTestHelper;
 import java.util.Objects;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +36,8 @@ public class UserControllerIntegrationTest {
   protected CacheManager cacheManager;
   @Autowired
   private UserService userService;
+  @Autowired
+  private AuthenticationService authenticationService;
   @LocalServerPort
   private int port;
   @Autowired
@@ -47,9 +48,11 @@ public class UserControllerIntegrationTest {
   @BeforeAll
   void setUp() {
     RepositoryTestHelper.resetDatabase(dataSource);
-    cacheManager.getCacheNames().forEach(c -> Objects.requireNonNull(cacheManager.getCache(c)).clear());
+    cacheManager
+      .getCacheNames()
+      .forEach(c -> Objects.requireNonNull(cacheManager.getCache(c)).clear());
     accessToken = obtainAccessToken();
-    baseUrl = "http://localhost:" + port + "/api/v1/user";
+    baseUrl = "http://localhost:" + port + "/api/v1/users";
   }
 
   @Test
@@ -57,7 +60,8 @@ public class UserControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
 
-    ResponseEntity<UserDto[]> response = testRestTemplate.exchange(baseUrl, GET, new HttpEntity<>(headers), UserDto[].class);
+    ResponseEntity<UserDto[]> response =
+      testRestTemplate.exchange(baseUrl, GET, new HttpEntity<>(headers), UserDto[].class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
@@ -65,19 +69,28 @@ public class UserControllerIntegrationTest {
   }
 
   @Test
-  public void testGetRole() {
+  public void testGetUser() {
     String username = "userone";
 
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
 
-    ResponseEntity<UserDetailsDto> response = testRestTemplate.exchange(baseUrl + "/" + username, GET, new HttpEntity<>(headers), UserDetailsDto.class);
+    ResponseEntity<UserDetailsDto> response =
+      testRestTemplate.exchange(
+        baseUrl + "/" + username, GET, new HttpEntity<>(headers), UserDetailsDto.class);
 
     assertThat(response.getStatusCode()).isEqualTo(OK);
     assertThat(response.getBody()).isNotNull();
-    assertTrue(response.getBody().permissions().stream().anyMatch(permission -> permission.name().equals("read")));
-    assertTrue(response.getBody().permissions().stream().anyMatch(permission -> permission.name().equals("write")));
-    assertTrue(response.getBody().permissions().stream().anyMatch(permission -> permission.name().equals("delete")));
+    assertTrue(response.getBody().roles().stream().anyMatch(role -> role.equals("administrator")));
+    assertTrue(
+      response.getBody().permissions().stream()
+        .anyMatch(permission -> permission.equals("read")));
+    assertTrue(
+      response.getBody().permissions().stream()
+        .anyMatch(permission -> permission.equals("write")));
+    assertTrue(
+      response.getBody().permissions().stream()
+        .anyMatch(permission -> permission.equals("delete")));
   }
 
   @Test
@@ -87,33 +100,27 @@ public class UserControllerIntegrationTest {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
 
-    ResponseEntity<Void> response = testRestTemplate.exchange(baseUrl + "/" + username, GET, new HttpEntity<>(headers), Void.class);
+    ResponseEntity<Void> response =
+      testRestTemplate.exchange(
+        baseUrl + "/" + username, GET, new HttpEntity<>(headers), Void.class);
 
     assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
   }
 
   private String obtainAccessToken() {
-    final String loginUrl = "http://localhost:" + port + "/api/v1/auth/register";
+    authenticationService.registerUser(
+      new User(
+        "test_user",
+        "test_user_name",
+        "test_user_password",
+        "test_user@email.com",
+        null,
+        null));
 
-    ObjectMapper objectMapper = new ObjectMapper();
-    String requestBody = null;
-    try {
-      requestBody = objectMapper.writeValueAsString(
-        new RegisterDto(
-          "test_user",
-          "test_user_name",
-          "test_user_password",
-          "test_user@email.com")
-      );
-    } catch (Exception exception) {
-      exception.printStackTrace();
-    }
+    AuthResponse authResponse =
+      authenticationService.authenticateUser(
+        new User("test_user", null, "test_user_password", null, null, null));
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Content-Type", "application/json");
-
-    ResponseEntity<AuthResponseDto> response = testRestTemplate.postForEntity(loginUrl, new HttpEntity<>(requestBody, headers), AuthResponseDto.class);
-
-    return response.getBody().accessToken();
+    return authResponse.getToken().getRefreshToken();
   }
 }

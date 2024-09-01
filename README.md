@@ -12,24 +12,24 @@ This is just an idea of Role Based Access Control (RBAC). This could be consider
 
 ### Permissions
 
-* `GET /permission`: Return list of permissions
-* `POST /permission`: Create a new permission
-* `GET /permission/{permissionName}`: Return details of a permission
-* `DELETE /permission/{permissionName}`: Delete the permission
+* `GET /permissions`: Return list of permissions
+* `POST /permissions`: Create a new permission
+* `GET /permissions/{permissionName}`: Return details of a permission
+* `DELETE /permissions/{permissionName}`: Delete the permission
 
 ### Roles
 
-* `GET /role`: Return list of roles
-* `POST /role`: Create a new role
-* `GET /role/{roleName}`: Return details of a role
-* `DELETE /role/{roleName}`: Delete the role
-* `POST /role/{roleName}/permission/{permissionName}`: Add the permission to the role
-* `DELETE /role/{roleName}/permission/{permissionName}`: Remove the permission from the role
+* `GET /roles`: Return list of roles
+* `POST /roles`: Create a new role
+* `GET /roles/{roleName}`: Return details of a role
+* `DELETE /roles/{roleName}`: Delete the role
+* `POST /roles/{roleName}/permission/{permissionName}`: Add the permission to the role
+* `DELETE /roles/{roleName}/permission/{permissionName}`: Remove the permission from the role
 
 ### Users
 
-* `GET /user`: Return list of users
-* `GET /user/{user}`: Return detail of a user
+* `GET /users`: Return list of users
+* `GET /users/{user}`: Return detail of a user
 
 ### Authentication
 

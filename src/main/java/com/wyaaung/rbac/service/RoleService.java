@@ -1,9 +1,6 @@
 package com.wyaaung.rbac.service;
 
-import com.wyaaung.rbac.domain.Permission;
 import com.wyaaung.rbac.domain.Role;
-import com.wyaaung.rbac.domain.RoleDetails;
-import com.wyaaung.rbac.domain.RoleUsers;
 import com.wyaaung.rbac.exception.DuplicateRoleException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.PermissionNotInRoleException;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RoleService {
-
   private final RoleRepository roleRepository;
   private final PermissionRepository permissionRepository;
   private final RolePermissionRepository rolePermissionRepository;
@@ -40,13 +36,13 @@ public class RoleService {
   }
 
   @Cacheable(value = "RoleCache", key = "{#roleName}")
-  public RoleUsers getUsersWithRole(final String roleName) {
+  public Role getUsersWithRole(final String roleName) {
     Role role = getRole(roleName);
     return roleRepository.getUsersWithRole(role);
   }
 
   @Cacheable(value = "RoleCache", key = "{#roleName}")
-  public List<Permission> getPermissionsOfRole(final String roleName) {
+  public List<String> getPermissionsOfRole(final String roleName) {
     if (!roleExists(roleName)) {
       throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
     }
@@ -55,8 +51,8 @@ public class RoleService {
   }
 
   public void createRole(final Role role) {
-    if (roleExists(role.name())) {
-      throw new DuplicateRoleException(String.format("Role '%s' already exists", role.name()));
+    if (roleExists(role.getName())) {
+      throw new DuplicateRoleException(String.format("Role '%s' already exists", role.getName()));
     }
     roleRepository.createRole(role);
   }
@@ -66,8 +62,7 @@ public class RoleService {
       throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
     }
 
-    final Set<String> usersWithRole =
-      getUsersWithRole(roleName).users().stream().map((user) -> user.getUsername()).collect(Collectors.toSet());
+    final Set<String> usersWithRole = getUsersWithRole(roleName).getUsers().stream().collect(Collectors.toSet());
     if (!usersWithRole.isEmpty()) {
       throw new ValidationException("Role is assigned to users: %s".formatted(String.join(", ", usersWithRole)));
     }
@@ -75,8 +70,12 @@ public class RoleService {
     roleRepository.deleteRole(roleName);
   }
 
-  public RoleDetails addPermissionToRole(final String roleName, final String permissionName) {
-    Role role = getRole(roleName);
+  public List<String> addPermissionToRole(final String roleName, final String permissionName) {
+    boolean roleExists = roleExists(roleName);
+
+    if (!roleExists) {
+      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
+    }
 
     if (!permissionRepository.permissionExists(permissionName)) {
       throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
@@ -84,16 +83,18 @@ public class RoleService {
 
     rolePermissionRepository.addPermissionToRole(roleName, permissionName);
 
-    return new RoleDetails(
-      rolePermissionRepository.getPermissionsOfRole(roleName).stream().collect(Collectors.toSet()),
-      roleRepository.getUsersWithRole(role).users());
+    return rolePermissionRepository.getPermissionsOfRole(roleName);
   }
 
-  public RoleDetails deletePermissionToRole(final String roleName, final String permissionName) {
-    Role role = getRole(roleName);
+  public List<String> deletePermissionToRole(final String roleName, final String permissionName) {
+    boolean roleExists = roleExists(roleName);
+
+    if (!roleExists) {
+      throw new RoleNotFoundException(String.format("Role '%s' does not exist", roleName));
+    }
 
     boolean permissionExists =
-      rolePermissionRepository.getPermissionsOfRole(roleName).stream().anyMatch(permission -> permission.name().equals(permissionName));
+      rolePermissionRepository.getPermissionsOfRole(roleName).stream().anyMatch(permission -> permission.equals(permissionName));
 
     if (!permissionExists) {
       throw new PermissionNotInRoleException(String.format("Permission '%s' does not exist in Role %s", permissionName, roleName));
@@ -101,9 +102,7 @@ public class RoleService {
 
     rolePermissionRepository.deletePermissionToRole(roleName, permissionName);
 
-    return new RoleDetails(
-      rolePermissionRepository.getPermissionsOfRole(roleName).stream().collect(Collectors.toSet()),
-      roleRepository.getUsersWithRole(role).users());
+    return rolePermissionRepository.getPermissionsOfRole(roleName);
   }
 
   public Role getRole(final String roleName) {

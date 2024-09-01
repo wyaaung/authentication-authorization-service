@@ -1,9 +1,6 @@
 package com.wyaaung.rbac.repository;
 
 import com.wyaaung.rbac.domain.Role;
-import com.wyaaung.rbac.domain.RoleUsers;
-import com.wyaaung.rbac.domain.User;
-import com.wyaaung.rbac.repository.mapper.RoleRowMapper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,11 +15,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class RoleRepository {
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-  private final RoleRowMapper roleRowMapper;
 
-  public RoleRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate, RoleRowMapper roleRowMapper) {
+  public RoleRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    this.roleRowMapper = roleRowMapper;
   }
 
   public boolean roleExists(final String roleName) {
@@ -51,13 +46,12 @@ public class RoleRepository {
       final List<Role> result = new ArrayList<>();
 
       while (resultSet.next()) {
-        result.add(
-          new Role(
-            resultSet.getString("name"),
-            resultSet.getString("description"),
-            resultSet.getString("display_name")
-          )
-        );
+        Role role = new Role();
+        role.setName(resultSet.getString("name"));
+        role.setDescription(resultSet.getString("description"));
+        role.setDisplayName(resultSet.getString("display_name"));
+
+        result.add(role);
       }
       return result;
     });
@@ -73,7 +67,14 @@ public class RoleRepository {
     final SqlParameterSource parameters = new MapSqlParameterSource().addValue("role_name", roleName);
 
     try {
-      return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, roleRowMapper));
+      return Optional.of(namedParameterJdbcTemplate.queryForObject(sql, parameters, (resultSet, rowNum) -> {
+        Role role = new Role();
+        role.setName(resultSet.getString("name"));
+        role.setDescription(resultSet.getString("description"));
+        role.setDisplayName(resultSet.getString("display_name"));
+
+        return role;
+      }));
     } catch (EmptyResultDataAccessException ignored) {
       return Optional.empty();
     }
@@ -87,9 +88,9 @@ public class RoleRepository {
       """;
 
     final SqlParameterSource paramSource = new MapSqlParameterSource()
-      .addValue("name", role.name())
-      .addValue("description", role.description())
-      .addValue("display_name", role.displayName());
+      .addValue("name", role.getName())
+      .addValue("description", role.getDescription())
+      .addValue("display_name", role.getDisplayName());
 
     namedParameterJdbcTemplate.update(sql, paramSource);
   }
@@ -105,39 +106,32 @@ public class RoleRepository {
     namedParameterJdbcTemplate.update(sql, paramSource);
   }
 
-  public RoleUsers getUsersWithRole(final Role role) {
+  public Role getUsersWithRole(final Role role) {
     final String sql = """
       SELECT
-          u.username,
-          u.full_name,
-          u.email_address
+          u.username
       FROM
           role r
               JOIN
           user_role  ur  ON r.name = ur.role_name
               JOIN
           user_account u ON ur.username = u.username
-            
       WHERE
           r.name = :role_name
       """;
 
-    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("role_name", role.name());
+    final SqlParameterSource parameters = new MapSqlParameterSource().addValue("role_name", role.getName());
 
     return namedParameterJdbcTemplate.query(sql, parameters, (resultSet) -> {
-      Set<User> users = new HashSet<>();
+      Set<String> users = new HashSet<>();
 
       while (resultSet.next()) {
-        final String username = resultSet.getString("username");
-        final String fullName = resultSet.getString("full_name");
-        final String emailAddress = resultSet.getString("email_address");
-
-        users.add(new User(
-          username, fullName, null, emailAddress
-        ));
+        users.add(resultSet.getString("username"));
       }
 
-      return new RoleUsers(role.name(), users);
+      role.setUsers(users.stream().toList());
+
+      return role;
     });
   }
 }

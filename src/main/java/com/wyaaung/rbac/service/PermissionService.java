@@ -1,7 +1,6 @@
 package com.wyaaung.rbac.service;
 
 import com.wyaaung.rbac.domain.Permission;
-import com.wyaaung.rbac.domain.PermissionDetails;
 import com.wyaaung.rbac.exception.DuplicatePermissionException;
 import com.wyaaung.rbac.exception.PermissionNotFoundException;
 import com.wyaaung.rbac.exception.ValidationException;
@@ -18,7 +17,9 @@ public class PermissionService {
   private final PermissionRepository permissionRepository;
   private final UserRolePermissionRepository userRolePermissionRepository;
 
-  public PermissionService(PermissionRepository permissionRepository, UserRolePermissionRepository userRolePermissionRepository) {
+  public PermissionService(
+    PermissionRepository permissionRepository,
+    UserRolePermissionRepository userRolePermissionRepository) {
     this.permissionRepository = permissionRepository;
     this.userRolePermissionRepository = userRolePermissionRepository;
   }
@@ -29,14 +30,15 @@ public class PermissionService {
   }
 
   @Cacheable(value = "PermissionCache", key = "{#permissionName}")
-  public PermissionDetails getRolesAndUsersWithPermission(final String permissionName) {
+  public Permission getRolesAndUsersWithPermission(final String permissionName) {
     Permission permission = getPermission(permissionName);
     return userRolePermissionRepository.getRolesAndUsersByPermission(permission);
   }
 
   public void createPermission(final Permission permission) {
-    if (permissionExists(permission.name())) {
-      throw new DuplicatePermissionException(String.format("Permission '%s' already exists", permission.name()));
+    if (permissionExists(permission.getName())) {
+      throw new DuplicatePermissionException(
+        String.format("Permission '%s' already exists", permission.getName()));
     }
 
     permissionRepository.createPermission(permission);
@@ -44,23 +46,28 @@ public class PermissionService {
 
   public void deletePermission(final String permissionName) {
     if (!permissionExists(permissionName)) {
-      throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
+      throw new PermissionNotFoundException(
+        String.format("Permission '%s' does not exist", permissionName));
     }
 
     Set<String> permissionAssignedRoles = permissionAssigneRoles(permissionName);
     if (!permissionAssignedRoles.isEmpty()) {
-      throw new ValidationException(String.format("Permission '%s' has been assigned to certain roles: %s", permissionName,
-        permissionAssignedRoles));
+      throw new ValidationException(
+        String.format(
+          "Permission '%s' has been assigned to certain roles: %s",
+          permissionName, permissionAssignedRoles));
     }
 
     permissionRepository.deletePermission(permissionName);
   }
 
   public Permission getPermission(final String permissionName) {
-    final Optional<Permission> optionalPermission = permissionRepository.getPermission(permissionName);
+    final Optional<Permission> optionalPermission =
+      permissionRepository.getPermission(permissionName);
 
     if (!optionalPermission.isPresent()) {
-      throw new PermissionNotFoundException(String.format("Permission '%s' does not exist", permissionName));
+      throw new PermissionNotFoundException(
+        String.format("Permission '%s' does not exist", permissionName));
     }
 
     return optionalPermission.get();

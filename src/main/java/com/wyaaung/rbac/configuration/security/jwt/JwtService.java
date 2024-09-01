@@ -1,10 +1,17 @@
-package com.wyaaung.rbac.configuration.security;
+package com.wyaaung.rbac.configuration.security.jwt;
 
 import com.wyaaung.rbac.domain.User;
+import com.wyaaung.rbac.exception.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +20,12 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Service
 public class JwtService {
-
+  @Value("${jwt.token.prefix}")
+  public String TOKEN_PREFIX;
   @Value("${jwt.secret-key}")
   private String SECRET_KEY;
   @Value("${jwt.access-token.expiration}")
@@ -23,8 +33,14 @@ public class JwtService {
   @Value("${jwt.refresh-token.expiration}")
   private long REFRESH_TOKEN_EXPIRATION;
 
-  public String extractUsername(String token) {
-    return extractClaim(token, Claims::getSubject);
+  public String parseJwt(HttpServletRequest request) {
+    final String authorizationHeader = request.getHeader(AUTHORIZATION);
+
+    if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
+      throw new JwtAuthenticationException("Bearer AccessToken Not Found");
+    }
+
+    return authorizationHeader.substring(7);
   }
 
   public String generateToken(User user) {
@@ -39,17 +55,16 @@ public class JwtService {
     return buildToken(new HashMap<>(), user, REFRESH_TOKEN_EXPIRATION);
   }
 
-  public Date extractExpiration(String token) {
-    return extractClaim(token, Claims::getExpiration);
-  }
-
-  public boolean isTokenValid(String token, User user) {
-    final String username = extractUsername(token);
-    return (username.equals(user.getUsername())) && !isTokenExpired(token);
+  public String extractUsername(String token) {
+    return extractClaim(token, Claims::getSubject);
   }
 
   public boolean isTokenExpired(String token) {
     return extractExpiration(token).before(new Date());
+  }
+
+  public Date extractExpiration(String token) {
+    return extractClaim(token, Claims::getExpiration);
   }
 
   private String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
@@ -63,11 +78,16 @@ public class JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token).getPayload();
+    try {
+      return Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(token).getPayload();
+    } catch (
+      ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException exception
+    ) {
+      throw new JwtException(exception.getMessage());
+    }
   }
 
   private SecretKey getSignInKey() {
-    byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-    return Keys.hmacShaKeyFor(keyBytes);
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
   }
 }
