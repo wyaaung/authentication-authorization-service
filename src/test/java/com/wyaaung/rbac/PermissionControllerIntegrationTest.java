@@ -60,7 +60,7 @@ public class PermissionControllerIntegrationTest {
       .getCacheNames()
       .forEach(c -> Objects.requireNonNull(cacheManager.getCache(c)).clear());
     accessToken = obtainAccessToken();
-    baseUrl = "http://localhost:" + port + "/api/v1/permission";
+    baseUrl = "http://localhost:" + port + "/api/v1/permissions";
   }
 
   @Test

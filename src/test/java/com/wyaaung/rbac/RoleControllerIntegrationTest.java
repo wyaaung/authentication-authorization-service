@@ -62,7 +62,7 @@ public class RoleControllerIntegrationTest {
       .getCacheNames()
       .forEach(c -> Objects.requireNonNull(cacheManager.getCache(c)).clear());
     accessToken = obtainAccessToken();
-    baseUrl = "http://localhost:" + port + "/api/v1/role";
+    baseUrl = "http://localhost:" + port + "/api/v1/roles";
   }
 
   @Test

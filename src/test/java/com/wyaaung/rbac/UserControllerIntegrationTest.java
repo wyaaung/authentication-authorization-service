@@ -52,7 +52,7 @@ public class UserControllerIntegrationTest {
       .getCacheNames()
       .forEach(c -> Objects.requireNonNull(cacheManager.getCache(c)).clear());
     accessToken = obtainAccessToken();
-    baseUrl = "http://localhost:" + port + "/api/v1/user";
+    baseUrl = "http://localhost:" + port + "/api/v1/users";
   }
 
   @Test
