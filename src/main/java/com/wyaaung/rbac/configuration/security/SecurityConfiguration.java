@@ -1,12 +1,14 @@
 package com.wyaaung.rbac.configuration.security;
 
+import com.wyaaung.rbac.configuration.security.jwt.JwtAuthEntryPoint;
+import com.wyaaung.rbac.configuration.security.jwt.JwtAuthenticationFilter;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,8 +20,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
@@ -27,17 +27,20 @@ public class SecurityConfiguration {
 
   private final String[] allowedOrigins;
   private final String[] white_list_url;
-  private final AuthenticationProvider authenticationProvider;
+  private final DaoAuthenticationProvider daoAuthenticationProvider;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
   public SecurityConfiguration(@Value("${security.allowed.origins}") String[] allowedOrigins,
                                @Value("${security.white-list.urls}") String[] white_list_url,
-                               AuthenticationProvider authenticationProvider,
-                               JwtAuthenticationFilter jwtAuthenticationFilter) {
+                               DaoAuthenticationProvider daoAuthenticationProvider,
+                               JwtAuthenticationFilter jwtAuthenticationFilter,
+                               JwtAuthEntryPoint jwtAuthEntryPoint) {
     this.allowedOrigins = allowedOrigins;
     this.white_list_url = white_list_url;
-    this.authenticationProvider = authenticationProvider;
+    this.daoAuthenticationProvider = daoAuthenticationProvider;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.jwtAuthEntryPoint = jwtAuthEntryPoint;
   }
 
   @Bean
@@ -45,12 +48,10 @@ public class SecurityConfiguration {
     return http
       .csrf(AbstractHttpConfigurer::disable)
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-      .exceptionHandling(withDefaults())
-      .authorizeHttpRequests(
-        requests -> requests.requestMatchers(white_list_url).permitAll()
-          .anyRequest().authenticated()
-      ).sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .authenticationProvider(authenticationProvider)
+      .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
+      .authorizeHttpRequests(requests -> requests.requestMatchers(white_list_url).permitAll().anyRequest().authenticated())
+      .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+      .authenticationProvider(daoAuthenticationProvider)
       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
       .build();
   }
