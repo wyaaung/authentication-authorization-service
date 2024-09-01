@@ -1,4 +1,10 @@
 package com.wyaaung.rbac.dto;
 
-public record PermissionDto(String name, String description, String displayName) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record PermissionDto(
+  @JsonProperty("name") String name,
+  @JsonProperty("description") String description,
+  @JsonProperty("display_name") String displayName
+) {
 }
